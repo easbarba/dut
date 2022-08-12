@@ -127,29 +127,37 @@ class Main
   end
 end
 
-def cli
-  OptionParser.new do |opts|
-    opts.banner = 'Usage: dots [options]'
+options = {}
+oparser = OptionParser.new do |parser|
+  parser.banner = 'Usage: dots [options]'
 
-    main = Main.new(ARGV[1]) unless ARGV.empty?
+  parser.on('-f' '--from DIR', String, 'folder with dotfiles') do |from|
+    options[:from] = Pathname.new(from)
+  end
 
-    opts.on('-d', '--deploy', 'deploy dotfiles links') do
-      main.deploy
-    end
+  parser.on('-t', '--to DIR', String, 'location where to link files') do |to|
+    options[:to] = Pathname.new(to)
+  end
 
-    opts.on('-f', '--force', 'force redeployment of dotfiles links') do
-      main.deploy(force: true)
-    end
+  parser.on('-d', '--deploy', 'deploy dotfiles links') do
+    options[:deploy] = true
+  end
 
-    opts.on('-p', '--pretend', 'mimic deployment of symbolic links') do
-      main.dry_run
-    end
+  parser.on('-o', '--overwrite', 'force redeployment of dotfiles links') do
+    options[:force] = true
+  end
 
-    opts.on('-i', '--info', 'general information of internals commands') do
-      main.info
-    end
+  parser.on('-p', '--pretend', 'mimic deployment of symbolic links') do
+    options[:pretend] = true
+  end
+
+  parser.on('-i', '--info', 'general information of internals commands') do
+    options[:info] = true
   end
 end
 
-cli.parse! ['--help'] if ARGV.empty?
-cli.parse!
+oparser.parse! ['--help'] if ARGV.empty?
+oparser.parse!
+
+# Gooo
+Main.new(options).run
