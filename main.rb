@@ -170,4 +170,4 @@ oparser.parse! ['--help'] if ARGV.empty?
 oparser.parse!
 
 # Gooo
-p Main.new(options).run
+Main.new(options).run
