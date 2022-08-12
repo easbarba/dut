@@ -141,7 +141,7 @@ options = {}
 oparser = OptionParser.new do |parser|
   parser.banner = 'Usage: dots [options]'
 
-  parser.on('-f' '--from DIR', String, 'folder with dotfiles') do |from|
+  parser.on('-f', '--from DIR', String, 'folder with dotfiles') do |from|
     options[:from] = Pathname.new(from)
   end
 
