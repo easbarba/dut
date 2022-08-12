@@ -11,37 +11,42 @@ require 'find'
 require 'optparse'
 require 'fileutils'
 
-# Mirrors, by symlinking, a dotfiles repository to $HOME.
+# Mirrors, by symlinking, a dotfiles repository to $HOME or selected folder.
 class Main
   HOME = Pathname.new Dir.home
 
-  attr_reader :root, :home, :farm, :pretend
+  attr_reader :pretend, :to, :from, :overwrite
 
-  def initialize(root)
-    @root = Pathname.new(root)
-    @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, to_home(t)) } }
+  def initialize(options)
+    @options = options
+
+    @from = options[:from]
+    @to = options[:to].nil? ? HOME : options[:to]
+    @pretend = options[:pretend]
+    @overwrite = options[:overwrite]
+
+    @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, to_dir(t)) } }
   end
 
   # ignore these dotfiles
   def dotignored
-    dots = root.join('.dotsignore').read.split "\n"
+    dots = from.join('.dotsignore').read.split "\n"
     dots.append '.dotsignore' # ignore itself too, ofc!
-    # dots.append '.git' if root.join('.git').exist? # ignore the .git folder.
-    dots.uniq # users may not notice duplicated dotfiles.
+    dots.uniq # users may not notice duplicates.
   end
 
-  # is ITEM included in root folder?
+  # is ITEM included in from folder?
   def ignore?(item)
-    dotignored.map { |x| item.to_path.include? root.join(x).to_path }.any?
+    dotignored.map { |x| item.to_path.include? from.join(x).to_path }.any?
   end
 
   # organize listed items in .dotsignore as pathname
   def all_items
     { files: [], folders: [] }.tap do |x|
-      Find.find(root) do |item|
+      Find.find(from) do |item|
         item = Pathname.new item
 
-        next if item == root # skip the root folder itself
+        next if item == from # skip the from folder itself
         next if ignore? item
 
         item.file? ? x[:files] << item : x[:folders] << item
@@ -49,13 +54,12 @@ class Main
     end
   end
 
-  # transform  stringfied origin item's root absolute path to home
+  # transform  stringfied origin item's from absolute path to home
   # /a/b/c.tar --> /home/b/c.tar
-  def to_home(item)
-    home_path = HOME.to_path.concat('/') # / is needed to crop enterily item_path root path
-    item_homed = item.to_path.gsub(root.to_path, home_path)
+  def to_dir(item)
+    home_path = to.to_path.concat('/') # / is needed to crop enterily item_path from path
 
-    Pathname.new item_homed
+    Pathname.new(item.to_path.gsub(from.to_path, home_path))
   end
 
   # do not symlink but create top folders of files if it does not exist
@@ -66,7 +70,7 @@ class Main
     # return if link == HOME # do not create the $HOME folder :/
 
     puts "Creating folder: #{folder}"
-    FileUtils.mkdir_p folder unless pretend
+    # FileUtils.mkdir_p folder unless @options[:pretend]
   end
 
   # move file from home to a /home/backup/{file}
@@ -75,7 +79,7 @@ class Main
     return if link.symlink?
 
     warn "backup: #{link} ❯ $HOME/.backup."
-    FileUtils.mv link, HOME.join('.backup') unless pretend
+    FileUtils.mv link, HOME.join('.backup') unless @options[:pretend]
   end
 
   # delete symlink if symlink's target does not exist
@@ -83,18 +87,18 @@ class Main
     return if link.exist?
     return unless link.symlink? # skip as link is a symlink and aint faulty
 
-    warn "removing: #{link} is a faulty simlink"
-    link.delete unless pretend
+    warn "purging broken link: #{link}"
+    link.delete unless @options[:pretend]
   end
 
-  def link_file(target, link, force)
-    link.delete if force && link.exist?
+  def link_file(target, link)
+    link.delete if @options[:overwrite] && link.exist?
 
     # unless forced to, skip linking file as it does exist and is a symbolic link.
     return if link.symlink?
 
     puts "linking: #{target} ❯ #{link}"
-    link.make_symlink target unless pretend
+    link.make_symlink target unless @options[:pretend]
   end
 
   def fix_perm(link)
@@ -104,12 +108,12 @@ class Main
     link.chmod 0o744
   end
 
-  def deploy(force: false)
-    farm.each do |target, link| # As enumerator yielding folder to symlink
+  def deploy
+    @farm.each do |target, link| # As enumerator yielding folder to symlink
       make_folder link
       backup_item link
       rm_faulty_link link
-      link_file target, link, force
+      link_file target, link
       fix_perm link
     end
   end
@@ -125,9 +129,11 @@ class Main
     exit
   end
 
-    @pretend = true
+  def run
+    info if @options[:info]
 
-    deploy
+    puts 'pretend mode' if @options[:pretend]
+    deploy if @options[:deploy] || @options[:overwrite] || @options[:pretend]
   end
 end
 
