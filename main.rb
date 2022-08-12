@@ -115,11 +115,15 @@ class Main
   end
 
   def info
-    puts @root
-  end
+    puts <<~EOL
+      ... General information ...
 
-  def dry_run
-    puts 'running on pretend mode'
+      from: #{@options[:from]}
+      to: #{@options[:to]}
+    EOL
+    # farm: #{@farm.keys}
+    exit
+  end
 
     @pretend = true
 
