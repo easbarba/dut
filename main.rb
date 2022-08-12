@@ -70,7 +70,7 @@ class Main
     # return if link == HOME # do not create the $HOME folder :/
 
     puts "Creating folder: #{folder}"
-    # FileUtils.mkdir_p folder unless @options[:pretend]
+    FileUtils.mkdir_p folder unless @options[:pretend]
   end
 
   # move file from home to a /home/backup/{file}
@@ -125,7 +125,7 @@ class Main
       from: #{@options[:from]}
       to: #{@options[:to]}
     EOL
-    # farm: #{@farm.keys}
+
     exit
   end
 
@@ -170,4 +170,4 @@ oparser.parse! ['--help'] if ARGV.empty?
 oparser.parse!
 
 # Gooo
-Main.new(options).run
+p Main.new(options).run
