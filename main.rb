@@ -2,17 +2,6 @@
 # coding: utf-8
 # frozen_string_literal: true
 
-# Description: An opitionated dotfile deployer base on guix home and nix homemanager.
-
-# Features:
-# - the dotsignore file at the folder root behaves just like git's one ignoring undesired dotfiles.
-# - Folders are not symlinked but created.
-# - dry-run mode
-# - remove faulty symlinks if found
-# - backup non-symlink files to $HOME/.backup
-# - fully implemented cli interface
-# - GNU-Linux/BSD distros only
-#
 # TODO: Accept git commit sha as source to symlink deployment.
 # TODO: Read-only symlinks.
 # TODO: dotsignore to accept hash-like folder. eg: .config{foo,bar,meh,forevis}
