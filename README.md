@@ -13,9 +13,9 @@ Yet another simple and opinionated dot files manager.
 ## Usage
 
 ```sh
-dot --deploy /data/dotfiles-repo
-dot --force /data/dotfiles-repo
-dot --pretend /data/dotfiles-repo
+dot --from /data/dotfiles-repo --deploy
+dot --from /data/bin --to $HOME/.local/bin --overwrite
+dot --from /data/dotfiles-repo --pretend
 dot --info
 dot --help
 ```
