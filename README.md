@@ -20,6 +20,9 @@ dot --info
 dot --help
 ```
 
+## TODO
+- purge all symbolic linked files
+- keep history of early commands
 
 # LICENSE
 
