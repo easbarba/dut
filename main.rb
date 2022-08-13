@@ -142,11 +142,11 @@ oparser = OptionParser.new do |parser|
   parser.banner = 'Usage: dots [options]'
 
   parser.on('-f', '--from DIR', String, 'folder with dotfiles') do |from|
-    options[:from] = Pathname.new(from)
+    options[:from] = Pathname.new(from).expand_path
   end
 
   parser.on('-t', '--to DIR', String, 'location where to link files') do |to|
-    options[:to] = Pathname.new(to)
+    options[:to] = Pathname.new(to).expand_path
   end
 
   parser.on('-d', '--deploy', 'deploy dotfiles links') do
@@ -169,5 +169,5 @@ end
 oparser.parse! ['--help'] if ARGV.empty?
 oparser.parse!
 
-# Gooo
+# RUN
 Main.new(options).run
