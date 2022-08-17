@@ -15,17 +15,17 @@ require 'fileutils'
 class Main
   HOME = Pathname.new Dir.home
 
-  attr_reader :pretend, :to, :from, :overwrite
+  attr_reader :pretend, :destination, :from, :overwrite
 
   def initialize(options)
     @options = options
 
     @from = options[:from]
-    @to = options[:to].nil? ? HOME : options[:to]
+    @destination = options[:destination].nil? ? HOME : options[:destination]
     @pretend = options[:pretend]
     @overwrite = options[:overwrite]
 
-    @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, to_dir(t)) } }
+    @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
   end
 
   # ignore these dotfiles
@@ -56,10 +56,11 @@ class Main
 
   # transform  stringfied origin item's from absolute path to home
   # /a/b/c.tar --> /home/b/c.tar
-  def to_dir(item)
-    home_path = to.to_path.concat('/') # / is needed to crop enterily item_path from path
+  def destination_dir(item)
+    # / is needed to crop enterily item_path from path
+    destination_path = destination.to_path.concat('/')
 
-    Pathname.new(item.to_path.gsub(from.to_path, home_path))
+    Pathname.new(item.to_path.gsub(from.to_path, destination_path))
   end
 
   # do not symlink but create top folders of files if it does not exist
@@ -124,7 +125,7 @@ class Main
       ... General information ...
 
       from: #{@options[:from]}
-      to: #{@options[:to]}
+      destination: #{@options[:destination]}
     EOL
 
     exit
@@ -146,8 +147,8 @@ oparser = OptionParser.new do |parser|
     options[:from] = Pathname.new(from).expand_path
   end
 
-  parser.on('-t', '--to DIR', String, 'location where to link files') do |to|
-    options[:to] = Pathname.new(to).expand_path
+  parser.on('-t', '--to DIR', String, 'location where to link files') do |destination|
+    options[:destination] = Pathname.new(destination).expand_path
   end
 
   parser.on('-d', '--deploy', 'deploy dotfiles links') do
