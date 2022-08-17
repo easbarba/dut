@@ -57,10 +57,7 @@ class Main
   # transform  stringfied origin item's from absolute path to home
   # /a/b/c.tar --> /home/b/c.tar
   def destination_dir(item)
-    # / is needed to crop enterily item_path from path
-    destination_path = destination.to_path.concat('/')
-
-    Pathname.new(item.to_path.gsub(from.to_path, destination_path))
+    Pathname.new(item.to_path.gsub(from.to_path, destination.to_path))
   end
 
   # do not symlink but create top folders of files if it does not exist
