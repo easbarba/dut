@@ -103,6 +103,7 @@ class Main
 
   def fix_perm(link)
     return if link.symlink?
+    return if @options[:pretend]
 
     puts "updating permission of #{link}"
     link.chmod 0o744
