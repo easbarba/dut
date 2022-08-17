@@ -133,7 +133,7 @@ class Main
   def run
     info if @options[:info]
 
-    puts 'pretend mode' if @options[:pretend]
+    puts '__pretend-mode__' if @options[:pretend]
     deploy if @options[:deploy] || @options[:overwrite] || @options[:pretend]
   end
 end
