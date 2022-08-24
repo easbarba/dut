@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 
 use v5.32;
+use utf8;
 use warnings;
 use strict;
 use Getopt::Long 'HelpMessage';
