@@ -2,7 +2,7 @@
 Yet another simple and opinionated dot files manager.
 
 # Features:
- - dotsignore behaves just like git's one.
+ - `.dotsignore` behaves just like git's one.
  - Folders are not linked but created.
  - dry-run mode.
  - remove faulty symbolic links, if found.
