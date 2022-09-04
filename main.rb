@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
-# coding: utf-8
 # frozen_string_literal: true
 
 # TODO: Accept git commit sha as source to symlink deployment.
@@ -77,7 +76,9 @@ class Main
     return if link.symlink?
 
     warn "backup: #{link} ❯ $HOME/.backup."
-    FileUtils.mv link, HOME.join('.backup') unless @options[:pretend]
+    bckfolder = HOME.join('.backup')
+    FileUtils.mkdir_p bckfolder
+    FileUtils.mv link, bckfolder unless @options[:pretend]
   end
 
   # delete symlink if symlink's target does not exist
