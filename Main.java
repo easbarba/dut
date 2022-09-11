@@ -17,19 +17,23 @@ import java.util.Arrays;
         "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
 class Main implements Callable<Integer> {
 
-  @Option(names = { "-o", "--overwrite" }, description = "overwrite existent links")
+  @Option(names = { "-o", "--overwrite" }, description = "overwrite existent links.")
   private boolean overwrite;
 
-  @Option(names = { "-p", "--pretend" }, description = "demonstrate files linking")
+  @Option(names = { "-p", "--pretend" }, description = "demonstrate files linking.")
   private boolean pretend;
 
-  @Option(names = { "-c", "--create" }, description = "create links of dotfiles")
+  @Option(names = { "-c", "--create" }, description = "create links of dotfiles.")
   private boolean create;
 
-  @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles")
+  @Option(names = { "-i", "--info" }, description = "provide more information.")
+  private boolean information;
+
+
+  @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.")
   File source;
 
-  @Option(names = { "-t", "--to" }, paramLabel = "FOLDER", description = "folder to deliver symbolic links")
+  @Option(names = { "-t", "--to" }, paramLabel = "FOLDER", description = "folder to deliver symbolic links.")
   File destination;
 
   public static void main(String... args) {
@@ -39,8 +43,10 @@ class Main implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception { // your business logic goes here...
-    System.out.println("FROM: " + source);
-    System.out.println("TO: " + destination);
+    var info = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s", source, destination, overwrite, pretend, create);
+
+    if(information) System.out.println(info);
+
     var ignore = new Ignored();
     System.out.println(String.format("Ignored: ", ignore.finaList()));
 
