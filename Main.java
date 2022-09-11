@@ -6,15 +6,16 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.io.File;
-import java.util.List;
-import java.util.Arrays;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
-@Command(
-    name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1",
-    description =
-        "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
+@Command(name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1", description = "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
 class Main implements Callable<Integer> {
 
   @Option(names = { "-o", "--overwrite" }, description = "overwrite existent links.")
@@ -29,9 +30,8 @@ class Main implements Callable<Integer> {
   @Option(names = { "-i", "--info" }, description = "provide more information.")
   private boolean information;
 
-
   @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.")
-  File source;
+  String source;
 
   @Option(names = { "-t", "--to" }, paramLabel = "FOLDER", description = "folder to deliver symbolic links.")
   File destination;
@@ -43,22 +43,45 @@ class Main implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception { // your business logic goes here...
-    var info = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s", source, destination, overwrite, pretend, create);
+    var info = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s", source,
+        destination, overwrite, pretend, create);
 
-    if(information) System.out.println(info);
+    if (information)
+      System.out.println(info);
 
-    var ignore = new Ignored();
-    System.out.println(String.format("Ignored: ", ignore.finaList()));
+    var ignore = new Ignored(source);
+    System.out.println(String.format("Ignored: %s", ignore.finaList()));
 
     return 0;
   }
 }
 
 class Ignored {
+  String source;
+
+  public Ignored(String source) {
+    this.source = source;
+  }
+
   final String[] defaultOnes = { ".git", ".dotsignore" };
 
+  List<String> ignoredOnes() {
+    var dotsFile = Path.of(this.source, ".dotsignore");
+    List<String> dots = null;
+
+    try {
+      dots = Files.readAllLines(dotsFile);
+    } catch (IOException e) {
+      System.out.println("Caught " + e);
+    }
+
+    return dots;
+  }
+
   public List<String> finaList() {
-    List<String> result = Arrays.asList(defaultOnes);
+    List<String> result = new ArrayList<>(Arrays.asList(defaultOnes));
+
+    result.addAll(ignoredOnes());
 
     return result;
   }
