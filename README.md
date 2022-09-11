@@ -14,14 +14,15 @@ Yet another simple and opinionated dot files manager.
 
 # Options
 
-| option      | description                                                |
-|-------------+------------------------------------------------------------|
-| --to        | folder to deliver symbolic links                           |
-| --from      | source folder with all dotfiles                            |
-| --overwrite | overwrite existent links, usually good to fix broken links |
-| --clean     | remove all links from source folder                        |
-| --pretend   | demonstrate files linking                                  |
-| --create    | create links of dotfiles                                   |
+| option      	| description                         	|
+|-------------	|-------------------------------------	|
+| --to        	| to deliver symbolic links           	|
+| --from      	| source folder with all dotfiles     	|
+| --overwrite 	| overwrite existent links            	|
+| --clean     	| remove all links from source folder 	|
+| --pretend   	| demonstrate files linking           	|
+| --create    	| create links of dotfiles            	|
+
 
 ## Usage
 
