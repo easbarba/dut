@@ -1,10 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# TODO: Accept git commit sha as source to symlink deployment.
-# TODO: Read-only symlinks.
-# TODO: dotsignore to accept hash-like folder. eg: .config{foo,bar,meh,forevis}
-
 require 'pathname'
 require 'find'
 require 'optparse'
@@ -108,7 +104,7 @@ class Main
     link.chmod 0o744
   end
 
-  def deploy
+  def create
     @farm.each do |target, link| # As enumerator yielding folder to symlink
       make_folder link
       backup_item link
@@ -133,7 +129,7 @@ class Main
     info if @options[:info]
 
     puts '__pretend-mode__' if @options[:pretend]
-    deploy if @options[:deploy] || @options[:overwrite] || @options[:pretend]
+    create if @options[:create] || @options[:overwrite] || @options[:pretend]
   end
 end
 
@@ -149,15 +145,15 @@ oparser = OptionParser.new do |parser|
     options[:destination] = Pathname.new(destination).expand_path
   end
 
-  parser.on('-d', '--deploy', 'deploy dotfiles links') do
-    options[:deploy] = true
+  parser.on('-c', '--create', 'create dotfiles links') do
+    options[:create] = true
   end
 
-  parser.on('-o', '--overwrite', 'force redeployment of dotfiles links') do
+  parser.on('-o', '--overwrite', 'force recreating of dotfiles links') do
     options[:force] = true
   end
 
-  parser.on('-p', '--pretend', 'mimic deployment of symbolic links') do
+  parser.on('-p', '--pretend', 'mimic creating of symbolic links') do
     options[:pretend] = true
   end
 
