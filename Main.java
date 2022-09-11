@@ -8,8 +8,11 @@ import picocli.CommandLine.Parameters;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -75,7 +78,11 @@ class Ignored {
     List<String> dots = null;
 
     try {
-      dots = Files.readAllLines(dotsFile);
+      var listedDots = Files.readAllLines(dotsFile);
+      dots = new ArrayList<>(new HashSet<>(listedDots))
+        .stream()
+        .sorted(Comparator.reverseOrder())
+        .collect(Collectors.toList());
     } catch (IOException e) {
       System.out.println("Caught " + e);
     }
@@ -85,7 +92,6 @@ class Ignored {
 
   public List<String> finaList() {
     List<String> result = new ArrayList<>(Arrays.asList(defaultOnes));
-
     result.addAll(ignoredOnes());
 
     return result;
