@@ -17,10 +17,10 @@ Yet another simple and opinionated dot files manager.
 | option      | description                                                |
 |-------------+------------------------------------------------------------|
 | --to        | folder to deliver symbolic links                           |
-| --from      | source folder of files                                     |
+| --from      | source folder with all dotfiles                            |
 | --overwrite | overwrite existent links, usually good to fix broken links |
 | --clean     | remove all links from source folder                        |
-| --pretend   | demo the process of files linking                          |
+| --pretend   | demonstrate files linking                                  |
 | --create    | create links of dotfiles                                   |
 
 ## Usage
