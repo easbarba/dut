@@ -41,13 +41,18 @@ class Main implements Callable<Integer> {
     System.exit(exitCode);
   }
 
-  @Override
-  public Integer call() throws Exception { // your business logic goes here...
-    var info = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s", source,
+  String infoList() {
+    var result = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s\n", source,
         destination, overwrite, pretend, create);
 
+    return result;
+  }
+
+  @Override
+  public Integer call() throws Exception { // your business logic goes here...
+
     if (information)
-      System.out.println(info);
+      System.out.println(infoList());
 
     var ignore = new Ignored(source);
     System.out.println(String.format("Ignored: %s", ignore.finaList()));
