@@ -8,6 +8,8 @@ import picocli.CommandLine.Parameters;
 
 import java.util.concurrent.Callable;
 import java.io.File;
+import java.util.List;
+import java.util.Arrays;
 
 @Command(
     name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1",
@@ -39,6 +41,19 @@ class Main implements Callable<Integer> {
   public Integer call() throws Exception { // your business logic goes here...
     System.out.println("FROM: " + source);
     System.out.println("TO: " + destination);
+    var ignore = new Ignored();
+    System.out.println(String.format("Ignored: ", ignore.finaList()));
+
     return 0;
+  }
+}
+
+class Ignored {
+  final String[] defaultOnes = { ".git", ".dotsignore" };
+
+  public List<String> finaList() {
+    List<String> result = Arrays.asList(defaultOnes);
+
+    return result;
   }
 }
