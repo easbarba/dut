@@ -60,6 +60,9 @@ class Main implements Callable<Integer> {
     var ignore = new Ignored(source);
     System.out.println(String.format("Ignored: %s", ignore.finaList()));
 
+    var create = new Create(source, null);
+    create.run();
+
     return 0;
   }
 }
@@ -99,11 +102,13 @@ class Ignored {
 }
 
 class Create {
-  public Create(String source, String destination) {
+  public Create(String source, String destination, List<String> ignoredOnes) {
     this.source = source;
     this.destination = destination;
+    this.ignoredOnes = ignoredOnes;
   }
 
+  List<String> ignoredOnes;
   String source;
   String destination;
   String home = System.getProperty("user.home");
