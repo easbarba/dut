@@ -97,3 +97,37 @@ class Ignored {
     return result;
   }
 }
+
+class Create {
+  public Create(String source, String destination) {
+    this.source = source;
+    this.destination = destination;
+  }
+
+  String source;
+  String destination;
+  String home = System.getProperty("user.home");
+
+  void make_folder(String link) {
+  }
+
+  void backup_item(String link) {
+  }
+
+  void remove_faulty_link(String link) {
+  }
+
+  void link_file(String target, String link) {
+  }
+
+  void fix_permission(String link) {
+  }
+
+  void run() {
+    make_folder(link);
+    backup_item(link);
+    rm_faulty_link(link);
+    link_file(target, link);
+    fix_perm(link);
+  }
+}
