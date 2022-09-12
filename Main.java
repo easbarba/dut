@@ -13,8 +13,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -60,8 +62,8 @@ class Main implements Callable<Integer> {
     var ignore = new Ignored(source);
     System.out.println(String.format("Ignored: %s", ignore.finaList()));
 
-    var create = new Create(source, null);
-    create.run();
+    // var create = new Create(source, null);
+    // create.run();
 
     return 0;
   }
@@ -81,11 +83,12 @@ class Ignored {
     List<String> dots = null;
 
     try {
-      var listedDots = Files.readAllLines(dotsFile);
-      dots = new ArrayList<>(new HashSet<>(listedDots))
-        .stream()
+      Stream<String> listedDots = Files.lines(dotsFile);
+      dots = listedDots
+        .distinct()
         .sorted(Comparator.reverseOrder())
         .collect(Collectors.toList());
+
     } catch (IOException e) {
       System.out.println("Caught " + e);
     }
@@ -102,37 +105,68 @@ class Ignored {
 }
 
 class Create {
+  List<String> ignoredOnes;
+  String source;
+  String destination;
+  String home = System.getProperty("user.home");
+
   public Create(String source, String destination, List<String> ignoredOnes) {
     this.source = source;
     this.destination = destination;
     this.ignoredOnes = ignoredOnes;
   }
 
-  List<String> ignoredOnes;
-  String source;
-  String destination;
-  String home = System.getProperty("user.home");
-
-  void make_folder(String link) {
+  public void clean() {
+    throw new UnsupportedOperationException("not implemented");
   }
 
-  void backup_item(String link) {
+  public void overwrite() {
+    throw new UnsupportedOperationException("not implemented");
   }
 
-  void remove_faulty_link(String link) {
+  public void pretend() {
+    throw new UnsupportedOperationException("not implemented");
+
   }
 
-  void link_file(String target, String link) {
+  void apply() {
+    throw new UnsupportedOperationException("not implemented");
+    // Path start = FileSystems.getDefault().getPath(source);
+
+    // try {
+    // Files.walk(start)
+    // .filter(path -> ignoredOnes.stream().map(i -> Path.of(source,
+    // i).toString().startsWith(path.toString())))
+    // .forEach(link -> {
+    // // .filter(path -> path.toFile().isFile())
+    // make_folder(link);
+    // backup_item(link);
+    // rm_faulty_link(link);
+    // link_file(link); // target
+    // fix_perm(link);
+    // });
+    // } catch (IOException e) {
+    // System.out.println(e);
+    // }
   }
 
-  void fix_permission(String link) {
+  private void make_folder(String link) {
+    throw new UnsupportedOperationException("not implemented");
   }
 
-  void run() {
-    make_folder(link);
-    backup_item(link);
-    rm_faulty_link(link);
-    link_file(target, link);
-    fix_perm(link);
+  private void backup_item(String link) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  private void remove_faulty_link(String link) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  private void link_file(String target, String link) {
+    throw new UnsupportedOperationException("not implemented");
+  }
+
+  private void fix_permission(String link) {
+    throw new UnsupportedOperationException("not implemented");
   }
 }
