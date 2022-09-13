@@ -5,12 +5,12 @@ Yet another simple and opinionated dot files manager.
  - Exactly mirror target folder structure.
  - Folders are created not linked to avoid common issues.
  - If a `.dotsignore` is present are files listed are to be ignored, eg: `LICENSE`.
+ - `.git` is ignored by default.
  - Overwrite present links [optional].
  - Pretend mode [optional].
- - Remove found faulty symbolic links.
+ - Remove faulty symbolic links found.
  - Back up non-symbolic link files to `$HOME/.backup` folder.
- - argp-like CLI interface.
- - Unix-like distributions only.
+  - Unix-like distributions only.
 
 # Options
 
