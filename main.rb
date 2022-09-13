@@ -149,6 +149,10 @@ oparser = OptionParser.new do |parser|
     options[:create] = true
   end
 
+  parser.on('-r', '--remove', 'remove created dotfiles links') do
+    options[:remove] = true
+  end
+
   parser.on('-o', '--overwrite', 'force recreating of dotfiles links') do
     options[:force] = true
   end
@@ -166,4 +170,11 @@ oparser.parse! ['--help'] if ARGV.empty?
 oparser.parse!
 
 # RUN
-Main.new(options).run
+a = Actions.new(options)
+
+a.info if options[:info]
+a.remove if options[:remove] 
+a.create if options[:create] 
+a.pretend if options[:pretend]
+a.overwrite if options[:overwrite] 
+
