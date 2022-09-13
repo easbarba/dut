@@ -20,7 +20,7 @@ Yet another simple and opinionated dot files manager.
 | --to        	| destination folder to deliver links   |
 | --from      	| target folder with dotfiles      	|
 | --create    	| create links of dotfiles            	|
-| --clean     	| remove links from target folder   	|
+| --remove    	| remove links from target folder   	|
 | --pretend   	| demonstrate files linking           	|
 | --overwrite 	| overwrite existent links            	|
 
