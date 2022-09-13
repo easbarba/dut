@@ -20,7 +20,9 @@ class Actions
   end
 
   def remove
-    @farm.each { |_, link| link.delete if link.exist? }
+    @farm.each do |_, link| 
+	link.delete if link.exist? && link.symlink?
+    end
   end
 
   def pretend
@@ -32,8 +34,7 @@ class Actions
     @farm.each do |target, link| 
     end
   end
-  
-      
+     
   def create
     @farm.each do |target, link| # As enumerator yielding folder to symlink
       make_folder link
