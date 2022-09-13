@@ -7,21 +7,55 @@ require 'optparse'
 require 'fileutils'
 
 # Mirrors, by symlinking, a dotfiles repository to $HOME or selected folder.
-class Main
+class Actions
   HOME = Pathname.new Dir.home
 
-  attr_reader :pretend, :destination, :from, :overwrite
+  attr_reader :destination, :from
 
   def initialize(options)
     @options = options
-
     @from = options[:from]
     @destination = options[:destination].nil? ? HOME : options[:destination]
-    @pretend = options[:pretend]
-    @overwrite = options[:overwrite]
-
     @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
   end
+
+  def remove
+    @farm.each { |_, link| link.delete if link.exist? }
+  end
+
+  def pretend
+    @farm.each do |target, link| 
+    end
+  end
+  
+  def overwrite
+    @farm.each do |target, link| 
+    end
+  end
+  
+      
+  def create
+    @farm.each do |target, link| # As enumerator yielding folder to symlink
+      make_folder link
+      backup_item link
+      rm_faulty_link link
+      link_file target, link
+      fix_perm link
+    end
+  end
+
+  def info
+    puts <<~EOL
+      ... General information ...
+
+      from: #{@options[:from]}
+      destination: #{@options[:destination]}
+    EOL
+
+    exit
+  end
+
+  private
 
   # ignore these dotfiles
   def dotignored
@@ -102,34 +136,6 @@ class Main
 
     puts "updating permission of #{link}"
     link.chmod 0o744
-  end
-
-  def create
-    @farm.each do |target, link| # As enumerator yielding folder to symlink
-      make_folder link
-      backup_item link
-      rm_faulty_link link
-      link_file target, link
-      fix_perm link
-    end
-  end
-
-  def info
-    puts <<~EOL
-      ... General information ...
-
-      from: #{@options[:from]}
-      destination: #{@options[:destination]}
-    EOL
-
-    exit
-  end
-
-  def run
-    info if @options[:info]
-
-    puts '__pretend-mode__' if @options[:pretend]
-    create if @options[:create] || @options[:overwrite] || @options[:pretend]
   end
 end
 
