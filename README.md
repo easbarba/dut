@@ -2,15 +2,15 @@
 Yet another simple and opinionated dot files manager.
 
 # Specification:
- - `.dotsignore` list all undesirable to link files, gitignore's syntax is expected.
+ - Exactly mirror target folder structure.
  - Folders are created not linked to avoid common issues.
- - remove links
- - overwrite links
- - pretend mode.
- - remove faulty symbolic links, if found.
- - backup non-symbolic link files to `$HOME/.backup` folder.
+ - If a `.dotsignore` is present are files listed are to be ignored, eg: `LICENSE`.
+ - Overwrite present links [optional].
+ - Pretend mode [optional].
+ - Remove found faulty symbolic links.
+ - Back up non-symbolic link files to `$HOME/.backup` folder.
  - argp-like CLI interface.
- - GNU-Linux/BSD distribution only.
+ - Unix-like distributions only.
 
 # Options
 
@@ -36,11 +36,12 @@ dot --help
 ```
 
 ## TODO
-- Purge all symbolic linked files
-- Keep history of early commands
-- Accept git commit sha as source to symlink creating.
-- Read-only symlinks.
-- dotsignore to accept hash-like folder. eg: .config{foo,bar,meh,forevis}
+- Do not overwrite symbolic links found
+- Keep history of early commands.
+- Git commit SHA as source to link.
+- Read-only symbolic links.
+- `.dotsignore` support hash-like folder. eg: .config{foo,bar,meh,forevis}
+- Rollback feature.
 
 # LICENSE
 
