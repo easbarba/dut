@@ -6,11 +6,12 @@ Yet another simple and opinionated dot files manager.
  - Folders are created not linked to avoid common issues.
  - If a `.dotsignore` is present are files listed are to be ignored, eg: `LICENSE`.
  - `.git` is ignored by default.
+ - Undo linking operation, but preserve folders.
  - Overwrite present links [optional].
  - Pretend mode [optional].
  - Remove faulty symbolic links found.
  - Back up non-symbolic link files to `$HOME/.backup` folder.
-  - Unix-like distributions only.
+ - Unix-like distributions only.
 
 # Options
     
