@@ -95,8 +95,6 @@ class Core
   end
 
   def link_file(target, link)
-    link.delete if @params[:overwrite] && link.exist?
-
     # unless forced to, skip linking file as it does exist and is a symbolic link.
     return if link.symlink?
 
@@ -133,6 +131,7 @@ class Actions
   end
 
   def overwrite
+    remove
     create
   end
 
