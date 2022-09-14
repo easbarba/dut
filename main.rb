@@ -12,9 +12,9 @@ class Farm
 
   attr_reader :all
 
-  def initialize(options)
-    @from = options[:from]
-    @destination = options[:destination].nil? ? HOME : options[:destination]
+  def initialize(params)
+    @from = params[:from]
+    @destination = params[:destination].nil? ? HOME : params[:destination]
     @all = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
   end
 
@@ -55,8 +55,8 @@ end
 class Core
   HOME = Pathname.new Dir.home
 
-  def initialize(options)
-    @options = options
+  def initialize(params)
+    @params = params
   end
 
   # do not symlink but create top folders of files if it does not exist
@@ -67,7 +67,7 @@ class Core
     # return if link == HOME # do not create the $HOME folder :/
 
     puts "Creating folder: #{folder}"
-    FileUtils.mkdir_p folder unless @options[:pretend]
+    FileUtils.mkdir_p folder unless @params[:pretend]
   end
 
   # move file from home to a /home/backup/{file}
@@ -78,7 +78,7 @@ class Core
     warn "backup: #{link} ❯ $HOME/.backup."
     home_backup_folder = HOME.join('.backup')
     FileUtils.mkdir_p home_backup_folder
-    FileUtils.mv link, home_backup_folder unless @options[:pretend]
+    FileUtils.mv link, home_backup_folder unless @params[:pretend]
   end
 
   # delete symlink if symlink's target does not exist
@@ -87,22 +87,22 @@ class Core
     return unless link.symlink? # skip as link is a symlink and aint faulty
 
     warn "purging broken link: #{link}"
-    link.delete unless @options[:pretend]
+    link.delete unless @params[:pretend]
   end
 
   def link_file(target, link)
-    link.delete if @options[:overwrite] && link.exist?
+    link.delete if @params[:overwrite] && link.exist?
 
     # unless forced to, skip linking file as it does exist and is a symbolic link.
     return if link.symlink?
 
     puts "linking: #{target} ❯ #{link}"
-    link.make_symlink target unless @options[:pretend]
+    link.make_symlink target unless @params[:pretend]
   end
 
   def fix_perm(link)
     return if link.symlink?
-    return if @options[:pretend]
+    return if @params[:pretend]
 
     puts "updating permission of #{link}"
     link.chmod 0o744
@@ -111,10 +111,10 @@ end
 
 # All actions operations
 class Actions
-  def initialize(options)
-    @options = options
-    @farm = Farm.new(options).all
-    @core = Core.new(options)
+  def initialize(params)
+    @params = params
+    @farm = Farm.new(params).all
+    @core = Core.new(params)
   end
 
   def remove
@@ -124,13 +124,12 @@ class Actions
   end
 
   def pretend
-    @farm.each do |target, link|
-    end
+    puts '-- pretend-mode --'
+    create
   end
 
   def overwrite
-    @farm.each do |target, link|
-    end
+    create
   end
 
   def create
@@ -147,54 +146,54 @@ class Actions
     puts <<~EOL
       ... General information ...
 
-      from: #{@options[:from]}
-      destination: #{@options[:destination]}
+      from: #{@params[:from]}
+      destination: #{@params[:destination]}
     EOL
 
     exit
   end
 end
 
-options = {}
-oparser = OptionParser.new do |parser|
+params = {}
+options = OptionParser.new do |parser|
   parser.banner = 'Usage: dots [options]'
 
   parser.on('-f', '--from DIR', String, 'folder with dotfiles') do |from|
-    options[:from] = Pathname.new(from).expand_path
+    params[:from] = Pathname.new(from).expand_path
   end
 
   parser.on('-t', '--to DIR', String, 'location where to link files') do |destination|
-    options[:destination] = Pathname.new(destination).expand_path
+    params[:destination] = Pathname.new(destination).expand_path
   end
 
   parser.on('-c', '--create', 'create dotfiles links') do
-    options[:create] = true
+    params[:create] = true
   end
 
   parser.on('-r', '--remove', 'remove created dotfiles links') do
-    options[:remove] = true
+    params[:remove] = true
   end
 
   parser.on('-o', '--overwrite', 'force recreating of dotfiles links') do
-    options[:force] = true
+    params[:force] = true
   end
 
   parser.on('-p', '--pretend', 'mimic creating of symbolic links') do
-    options[:pretend] = true
+    params[:pretend] = true
   end
 
   parser.on('-i', '--info', 'general information of internals commands') do
-    options[:info] = true
+    params[:info] = true
   end
 end
 
-oparser.parse! ['--help'] if ARGV.empty?
-oparser.parse!
+options.parse! ['--help'] if ARGV.empty?
+options.parse!
 
 # RUN
-actions = Actions.new(options)
-actions.info if options[:info]
-actions.remove if options[:remove]
-actions.create if options[:create]
-actions.pretend if options[:pretend]
-actions.overwrite if options[:overwrite]
+actions = Actions.new(params)
+actions.info if params[:info]
+actions.remove if params[:remove]
+actions.create if params[:create]
+actions.pretend if params[:pretend]
+actions.overwrite if params[:overwrite]
