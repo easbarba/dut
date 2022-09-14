@@ -174,8 +174,6 @@ end
 options.parse! ['--help'] if ARGV.empty?
 options.parse!(into: params)
 
-p params
-
 # RUN
 actions = Actions.new(params)
 actions.info if params[:info]
