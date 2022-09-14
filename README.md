@@ -1,6 +1,12 @@
 # Dot
 Yet another simple and opinionated dot files manager.
 
+| lang  | completion |
+|-------|------------|
+| ruby  | 97%        |
+| java  | 35%        |
+| guile | 12%        |
+
 # Specification:
  - Exactly mirror target folder structure.
  - Folders are created not linked to avoid common issues.
