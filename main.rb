@@ -6,77 +6,37 @@ require 'find'
 require 'optparse'
 require 'fileutils'
 
-# Mirrors, by symlinking, a dotfiles repository to $HOME or selected folder.
-class Actions
+# list of filtered files/folders to link
+class Farm
   HOME = Pathname.new Dir.home
 
-  attr_reader :destination, :from
+  attr_reader :all
 
   def initialize(options)
-    @options = options
     @from = options[:from]
     @destination = options[:destination].nil? ? HOME : options[:destination]
-    @farm = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
+    @all = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
   end
-
-  def remove
-    @farm.each do |_, link| 
-	link.delete if link.exist? && link.symlink?
-    end
-  end
-
-  def pretend
-    @farm.each do |target, link| 
-    end
-  end
-  
-  def overwrite
-    @farm.each do |target, link| 
-    end
-  end
-     
-  def create
-    @farm.each do |target, link| # As enumerator yielding folder to symlink
-      make_folder link
-      backup_item link
-      rm_faulty_link link
-      link_file target, link
-      fix_perm link
-    end
-  end
-
-  def info
-    puts <<~EOL
-      ... General information ...
-
-      from: #{@options[:from]}
-      destination: #{@options[:destination]}
-    EOL
-
-    exit
-  end
-
-  private
 
   # ignore these dotfiles
   def dotignored
-    dots = from.join('.dotsignore').read.split "\n"
+    dots = @from.join('.dotsignore').read.split "\n"
     dots.append '.dotsignore' # ignore itself too, ofc!
     dots.uniq # users may not notice duplicates.
   end
 
   # is ITEM included in from folder?
   def ignore?(item)
-    dotignored.map { |x| item.to_path.include? from.join(x).to_path }.any?
+    dotignored.map { |x| item.to_path.include? @from.join(x).to_path }.any?
   end
 
   # organize listed items in .dotsignore as pathname
   def all_items
     { files: [], folders: [] }.tap do |x|
-      Find.find(from) do |item|
+      Find.find(@from) do |item|
         item = Pathname.new item
 
-        next if item == from # skip the from folder itself
+        next if item == @from # skip the from folder itself
         next if ignore? item
 
         item.file? ? x[:files] << item : x[:folders] << item
@@ -87,7 +47,16 @@ class Actions
   # transform  stringfied origin item's from absolute path to home
   # /a/b/c.tar --> /home/b/c.tar
   def destination_dir(item)
-    Pathname.new(item.to_path.gsub(from.to_path, destination.to_path))
+    Pathname.new(item.to_path.gsub(@from.to_path, @destination.to_path))
+  end
+end
+
+# Mirrors, by symlinking, a dotfiles repository to $HOME or selected folder.
+class Core
+  HOME = Pathname.new Dir.home
+
+  def initialize(options)
+    @options = options
   end
 
   # do not symlink but create top folders of files if it does not exist
@@ -107,13 +76,13 @@ class Actions
     return if link.symlink?
 
     warn "backup: #{link} ❯ $HOME/.backup."
-    bckfolder = HOME.join('.backup')
-    FileUtils.mkdir_p bckfolder
-    FileUtils.mv link, bckfolder unless @options[:pretend]
+    home_backup_folder = HOME.join('.backup')
+    FileUtils.mkdir_p home_backup_folder
+    FileUtils.mv link, home_backup_folder unless @options[:pretend]
   end
 
   # delete symlink if symlink's target does not exist
-  def rm_faulty_link(link)
+  def remove_faulty_link(link)
     return if link.exist?
     return unless link.symlink? # skip as link is a symlink and aint faulty
 
@@ -137,6 +106,52 @@ class Actions
 
     puts "updating permission of #{link}"
     link.chmod 0o744
+  end
+end
+
+# All actions operations
+class Actions
+  def initialize(options)
+    @options = options
+    @farm = Farm.new(options).all
+    @core = Core.new(options)
+  end
+
+  def remove
+    @farm.each do |_, link|
+      link.delete if link.exist? && link.symlink?
+    end
+  end
+
+  def pretend
+    @farm.each do |target, link|
+    end
+  end
+
+  def overwrite
+    @farm.each do |target, link|
+    end
+  end
+
+  def create
+    @farm.each do |target, link| # As enumerator yielding folder to symlink
+      @core.make_folder link
+      @core.backup_item link
+      @core.remove_faulty_link link
+      @core.link_file target, link
+      @core.fix_perm link
+    end
+  end
+
+  def info
+    puts <<~EOL
+      ... General information ...
+
+      from: #{@options[:from]}
+      destination: #{@options[:destination]}
+    EOL
+
+    exit
   end
 end
 
@@ -177,11 +192,9 @@ oparser.parse! ['--help'] if ARGV.empty?
 oparser.parse!
 
 # RUN
-a = Actions.new(options)
-
-a.info if options[:info]
-a.remove if options[:remove] 
-a.create if options[:create] 
-a.pretend if options[:pretend]
-a.overwrite if options[:overwrite] 
-
+actions = Actions.new(options)
+actions.info if options[:info]
+actions.remove if options[:remove]
+actions.create if options[:create]
+actions.pretend if options[:pretend]
+actions.overwrite if options[:overwrite]
