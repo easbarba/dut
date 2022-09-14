@@ -13,8 +13,12 @@ class Farm
   attr_reader :all
 
   def initialize(params)
-    @from = params[:from]
-    @destination = params[:destination].nil? ? HOME : params[:destination]
+    @from = Pathname.new(params[:from]).expand_path
+    @destination = if params[:to].nil?
+                     HOME
+                   else
+                     Pathname.new(params[:to]).expand_path
+                   end
     @all = {}.tap { |f| all_items[:files].each { |t| f.store(t, destination_dir(t)) } }
   end
 
@@ -147,7 +151,7 @@ class Actions
       ... General information ...
 
       from: #{@params[:from]}
-      destination: #{@params[:destination]}
+      destination: #{@params[:to]}
     EOL
 
     exit
@@ -158,37 +162,19 @@ params = {}
 options = OptionParser.new do |parser|
   parser.banner = 'Usage: dots [options]'
 
-  parser.on('-f', '--from DIR', String, 'folder with dotfiles') do |from|
-    params[:from] = Pathname.new(from).expand_path
-  end
-
-  parser.on('-t', '--to DIR', String, 'location where to link files') do |destination|
-    params[:destination] = Pathname.new(destination).expand_path
-  end
-
-  parser.on('-c', '--create', 'create dotfiles links') do
-    params[:create] = true
-  end
-
-  parser.on('-r', '--remove', 'remove created dotfiles links') do
-    params[:remove] = true
-  end
-
-  parser.on('-o', '--overwrite', 'force recreating of dotfiles links') do
-    params[:force] = true
-  end
-
-  parser.on('-p', '--pretend', 'mimic creating of symbolic links') do
-    params[:pretend] = true
-  end
-
-  parser.on('-i', '--info', 'general information of internals commands') do
-    params[:info] = true
-  end
+  parser.on('-f', '--from DIR', String, 'folder with dotfiles')
+  parser.on('-t', '--to DIR', String, 'location where to link files')
+  parser.on('-c', '--create', 'create dotfiles links')
+  parser.on('-r', '--remove', 'remove created dotfiles links')
+  parser.on('-o', '--overwrite', 'force recreating of dotfiles links')
+  parser.on('-p', '--pretend', 'mimic creating of symbolic links')
+  parser.on('-i', '--info', 'general information of internals commands')
 end
 
 options.parse! ['--help'] if ARGV.empty?
-options.parse!
+options.parse!(into: params)
+
+p params
 
 # RUN
 actions = Actions.new(params)
