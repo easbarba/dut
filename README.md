@@ -42,6 +42,10 @@ dot --help
 - Read-only symbolic links.
 - `.dotsignore` support hash-like folder. eg: .config{foo,bar,meh,forevis}
 - Rollback feature.
+- Log operations
+- JSON output of last files linked operation, useful for rollback
+- Back up follows structure of folder `.config/code/user/settings.init` to `$HOME/.backup/.config/code/user/settings.init`
+- If there is more than one file on backup folder with same name, prepend current time
 
 # LICENSE
 
