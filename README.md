@@ -6,6 +6,7 @@ Yet another simple and opinionated dot files manager.
 | ruby  | 97%        |
 | java  | 35%        |
 | guile | 12%        |
+| bash  | 10%        |
 
 # Specification:
  - Exactly mirror target folder structure.
@@ -19,12 +20,12 @@ Yet another simple and opinionated dot files manager.
  - Back up non-symbolic link files to `$HOME/.backup` folder.
  - Unix-like distributions only.
 
-# Options
+# Command-line options
     
 | option      	| description                         	|
 |-------------	|-------------------------------------	|
-| --to        	| destination folder to deliver links   |
-| --from      	| target folder with dotfiles      	|
+| --to TO       | destination folder to deliver links   |
+| --from FROM   | target folder with dotfiles      	|
 | --create    	| create links of dotfiles            	|
 | --remove    	| remove links from target folder   	|
 | --pretend   	| demonstrate files linking           	|
