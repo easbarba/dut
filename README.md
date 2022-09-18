@@ -5,8 +5,8 @@ Yet another simple and opinionated dot files manager.
 |-------|------------|
 | ruby  | 97%        |
 | java  | 35%        |
+| bash  | 13%        |
 | guile | 12%        |
-| bash  | 10%        |
 
 # Specification:
  - Exactly mirror target folder structure.
