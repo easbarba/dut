@@ -13,6 +13,7 @@ CREATE=false
 REMOVE=false
 PRETEND=false
 OVERWRITE=false
+IGNORED=()
 
 # CLI OPTIONS
 usage() {
@@ -37,8 +38,8 @@ create:     $CREATE
 remove:     $REMOVE
 pretend:    $PRETEND
 overwrite:  $OVERWRITE
+ignored: ${IGNORED[@]}
 EOF
-
     exit 0
 }
 
@@ -62,11 +63,13 @@ unset OPTIONS
 while true; do
     case $1 in
         -t | --to)
-            TO="$2"
+            _to=$2
+            TO=${_to%%/} # remove trailing slash
             shift 2
             ;;
         -f | --from)
-            FROM="$2"
+            _from=$2
+            FROM=${_from%%/} # remove trailing slash
             shift 2
             ;;
         -h | --help)
@@ -97,6 +100,7 @@ while true; do
     esac
 done
 
-info
+IGNORED_FILE="$FROM/.dotsignore"
+[[ -f $IGNORED_FILE ]] && readarray -t IGNORED <$IGNORED_FILE
 
 exit
