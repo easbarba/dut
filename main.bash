@@ -4,10 +4,9 @@
 set -euo pipefail
 
 # DESCRIPTION: Yet another simple and opinionated dot files manager.
-# DEPENDENCIES: builtin getopts,
+# DEPENDENCIES: getopt,
 
 # VARIABLES
-ARGS=() # make args an array, not a string
 TO=""
 FROM=""
 CREATE=false
@@ -16,7 +15,7 @@ PRETEND=false
 OVERWRITE=false
 
 # CLI OPTIONS
-print_usage() {
+usage() {
     cat <<EOF
 Usage: dot [options]
     --to TO                 destination folder to deliver links
@@ -29,9 +28,9 @@ EOF
     exit 0
 }
 
-print_info() {
+info() {
     cat <<EOF
-dot [information]
+-- status --
 to:         $TO
 from:       $FROM
 create:     $CREATE
@@ -39,48 +38,65 @@ remove:     $REMOVE
 pretend:    $PRETEND
 overwrite:  $OVERWRITE
 EOF
+
+    exit 0
 }
 
-exit_abnormal() { # Function: Exit with error.
-    print_usage
+out() { # Function: Exit with error.
+    echo 'Do not know what you are after. Im out!'
     exit 1
 }
 
-# Replace long arguments
-for arg; do
-    case "$arg" in
-        --to) ARGS+=(-t) ;;
-        --from) ARGS+=(-f) ;;
-        --create) ARGS+=(-c) ;;
-        --remove) ARGS+=(-r) ;;
-        --pretend) ARGS+=(-p) ;;
-        --overwrite) ARGS+=(-o) ;;
-        --help) ARGS+=(-h) ;;
-        *) ARGS+=("$arg") ;;
-    esac
-done
-
-set -- "${ARGS[@]}"
-
-while getopts "crpoiht:f:" OPTION; do
-    : "$OPTION" "$OPTARG"
-    case $OPTION in
-        t) TO="$OPTARG" ;;
-        f) FROM="$OPTARG" ;;
-        c) CREATE=true ;;
-        r) REMOVE=true ;;
-        p) PRETEND=true ;;
-        o) OVERWRITE=true ;;
-        h) print_usage ;;
-        i) print_info ;;
-        *) exit_abnormal ;;
-    esac
-done
+SHORT=c,r,p,o,i,h,t:,f:
+LONG=to:,from:,create,remove,pretend,overwrite,help,info
+OPTIONS=$(getopt -n dot --options $SHORT --longoptions $LONG -- "$@")
 
 # No arguments provided
-if [[ $# -eq 0 ]]; then
-    print_usage
-    exit 1
+if [ $# -eq 0 ]; then
+    usage
 fi
+
+eval set -- "$OPTIONS"
+unset OPTIONS
+
+while true; do
+    case $1 in
+        -t | --to)
+            TO="$2"
+            shift 2
+            ;;
+        -f | --from)
+            FROM="$2"
+            shift 2
+            ;;
+        -h | --help)
+            usage
+            break
+            ;;
+        -i | --info)
+            info
+            break
+            ;;
+        -c | --create)
+            CREATE=true
+            break
+            ;;
+        -r | --remove)
+            REMOVE=true
+            break
+            ;;
+        -p | --pretend)
+            PRETEND=true
+            break
+            ;;
+        -o | --overwrite)
+            OVERWRITE=true
+            break
+            ;;
+        *) out ;;
+    esac
+done
+
+info
 
 exit
