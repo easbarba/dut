@@ -14,6 +14,7 @@ REMOVE=false
 PRETEND=false
 OVERWRITE=false
 IGNORED=()
+INFO=false
 
 # CLI OPTIONS
 usage() {
@@ -31,55 +32,38 @@ EOF
 
 info() {
     cat <<EOF
--- status --
+ -- general information --
 to:         $TO
 from:       $FROM
 create:     $CREATE
 remove:     $REMOVE
 pretend:    $PRETEND
 overwrite:  $OVERWRITE
-ignored: ${IGNORED[@]}
+ignored:    ${IGNORED[@]}
 EOF
     exit 0
 }
 
-out() { # Function: Exit with error.
-    echo 'Do not know what you are after. Im out!'
-    exit 1
-}
-
 SHORT=c,r,p,o,i,h,t:,f:
-LONG=to:,from:,create,remove,pretend,overwrite,help,info
-OPTIONS=$(getopt -n dot --options $SHORT --longoptions $LONG -- "$@")
+LONG=create,remove,pretend,overwrite,help,info,to:,from:
+eval set -- "$(getopt -n dot --options $SHORT --longoptions $LONG -- "$@")"
 
 # No arguments provided
-if [ $# -eq 0 ]; then
-    usage
-fi
+[[ $# -eq 0 ]] && usage
 
-eval set -- "$OPTIONS"
-unset OPTIONS
-
-while true; do
-    case $1 in
+while true; do # keep on till there is no more arguments
+    case "$1" in
         -t | --to)
-            _to=$2
+            _to="$2"
             TO=${_to%%/} # remove trailing slash
             shift 2
             ;;
         -f | --from)
-            _from=$2
+            _from="$2"
             FROM=${_from%%/} # remove trailing slash
             shift 2
             ;;
-        -h | --help)
-            usage
-            break
-            ;;
-        -i | --info)
-            info
-            break
-            ;;
+        -h | --help) usage ;;
         -c | --create)
             CREATE=true
             break
@@ -96,7 +80,8 @@ while true; do
             OVERWRITE=true
             break
             ;;
-        *) out ;;
+        -i | --info) INFO=true ;;
+        --) exit 1 ;;
     esac
 done
 
