@@ -85,7 +85,10 @@ while true; do # keep on till there is no more arguments
     esac
 done
 
+# LIST OF FILES TO BE IGNORED
 IGNORED_FILE="$FROM/.dotsignore"
-[[ -f $IGNORED_FILE ]] && readarray -t IGNORED <$IGNORED_FILE
+[[ -f $IGNORED_FILE ]] && readarray -t IGNORED <"$IGNORED_FILE"
+IGNORED+=(.git) # user should set it, but lets be safe!
+
 
 exit
