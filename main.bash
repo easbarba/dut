@@ -4,6 +4,7 @@
 set -euo pipefail
 
 # DESCRIPTION: Yet another simple and opinionated dot files manager.
+# DEPENDENCIES: builtin getopts,
 
 # VARIABLES
 ARGS=() # make args an array, not a string
@@ -75,5 +76,11 @@ while getopts "crpoiht:f:" OPTION; do
         *) exit_abnormal ;;
     esac
 done
+
+# No arguments provided
+if [[ $# -eq 0 ]]; then
+    print_usage
+    exit 1
+fi
 
 exit
