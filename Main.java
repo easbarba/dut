@@ -20,7 +20,8 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Command(name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1", description = "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
+@Command(name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1",
+         description = "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
 class Main implements Callable<Integer> {
 
   @Option(names = { "-o", "--overwrite" }, description = "overwrite existent links.")
@@ -35,7 +36,7 @@ class Main implements Callable<Integer> {
   @Option(names = { "-i", "--info" }, description = "provide more information.")
   private boolean information;
 
-  @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.")
+  @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.", required = true)
   String source;
 
   @Option(names = { "-t", "--to" }, paramLabel = "FOLDER", description = "folder to deliver symbolic links.")
@@ -47,8 +48,8 @@ class Main implements Callable<Integer> {
   }
 
   String infoList() {
-    var result = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s\n", source,
-        destination, overwrite, pretend, create);
+    var result = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s\n",
+                               source, destination, overwrite, pretend, create);
 
     return result;
   }
@@ -56,8 +57,13 @@ class Main implements Callable<Integer> {
   @Override
   public Integer call() throws Exception { // your business logic goes here...
 
-    if (information)
+    if (source.isEmpty()) {
+
+    }
+
+    if (information) {
       System.out.println(infoList());
+    }
 
     var ignore = new Ignored(source);
     System.out.println(String.format("Ignored: %s", ignore.finaList()));
@@ -89,6 +95,7 @@ class Ignored {
         .sorted(Comparator.reverseOrder())
         .collect(Collectors.toList());
 
+      listedDots.close();
     } catch (IOException e) {
       System.out.println("Caught " + e);
     }
