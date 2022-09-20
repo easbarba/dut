@@ -4,7 +4,7 @@
 set -euo pipefail
 
 # DESCRIPTION: Yet another simple and opinionated dot files manager.
-# DEPENDENCIES: getopt,
+# DEPENDENCIES: bash 4, getopt, find, cat, echo, grep, wc
 
 # VARIABLES
 TO=""
@@ -30,7 +30,7 @@ EOF
     exit 0
 }
 
-info() {
+print_info() {
     cat <<EOF
  -- general information --
 to:         $TO
@@ -80,8 +80,11 @@ while true; do # keep on till there is no more arguments
             OVERWRITE=true
             break
             ;;
-        -i | --info) INFO=true ;;
-        --) exit 1 ;;
+        -i | --info)
+            INFO=true
+            break
+            ;;
+        --) shift ;;
     esac
 done
 
@@ -90,5 +93,7 @@ IGNORED_FILE="$FROM/.dotsignore"
 [[ -f $IGNORED_FILE ]] && readarray -t IGNORED <"$IGNORED_FILE"
 IGNORED+=(.git) # user should set it, but lets be safe!
 
+# ACTIONS
+[[ $INFO ]] && print_info
 
 exit
