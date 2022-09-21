@@ -4,8 +4,8 @@ Yet another simple and opinionated dot files manager.
 | lang  | completion |
 |-------|------------|
 | ruby  | 97%        |
-| java  | 35%        |
-| bash  | 13%        |
+| java  | 37%        |
+| bash  | 16%        |
 | guile | 12%        |
 
 # Specification:
