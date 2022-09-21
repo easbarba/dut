@@ -62,6 +62,12 @@ while getopts "hcrpoif:t:" OPTION; do
     esac
 done
 
+# --from is a must!
+if [[ -z ${VALUES[from]} ]]; then
+    echo "Missing required option: '--from DIR'"
+    exit
+fi
+
 # LIST OF FILES TO BE IGNORED
 IGNORED_FILE="${VALUES[from]}/.dotsignore"
 [[ -f $IGNORED_FILE ]] && readarray -t IGNORED <"$IGNORED_FILE"
