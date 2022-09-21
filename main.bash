@@ -4,31 +4,38 @@
 set -euo pipefail
 
 # DESCRIPTION: Yet another simple and opinionated dot files manager.
-# DEPENDENCIES: bash 4, getopt, find, cat, echo, grep, wc
+# DEPENDENCIES: bash:4, getopt, find, cat, echo, grep, wc
 
-# make args an array, not a string
 # VARIABLES
 ARGS=()
 IGNORED=()
-declare -A ACTIONS
+
 declare -A VALUES
+VALUES=([from]='' [to]='')
+
+declare -A ACTIONS
+ACTIONS=([create]=false [remove]=false [pretend]=false [overwrite]=false [info]=false)
 
 # CLI OPTIONS
 usage() {
     cat <<EOF
 Usage: dot [options]
-    -t TO, --to=TO              destination folder to deliver links
-    -f FROM, --from=FROM        target folder with dotfiles
-    -c, --create                create links of dotfiles
-    -r, --remove                remove links from target folder
-    -p, --pretend               demonstrate files linking
-    -o, --overwrite             overwrite existent links
+    -t DIR,  --to DIR                destination folder to deliver links.
+    -f DIR,  --from DIR              target folder with dotfiles.
+    -c,      --create                create links of dotfiles.
+    -r,      --remove                remove links from target folder.
+    -p,      --pretend               demonstrate files linking.
+    -o,      --overwrite             overwrite existent links.
 EOF
     exit 0
 }
 
+# No arguments provided
+[[ $# -eq 0 ]] && usage
 
-# replace long arguments
+# -- OPTIONS:
+
+# Replace long arguments
 for arg; do
     case "$arg" in
         --help)           ARGS+=(-h) ;;
@@ -43,24 +50,23 @@ for arg; do
     esac
 done
 
-# No arguments provided
-[[ $# -eq 0 ]] && usage
-
 set -- "${ARGS[@]}"
 
 while getopts "hcrpoif:t:" OPTION; do
     case $OPTION in
         h)  usage;;
-        f)  VALUES+=([from]="$OPTARG");;
-        t)  VALUES+=([to]="$OPTARG");;
-        c)  ACTIONS+=([create]=true);;
-        r)  ACTIONS+=([remove]=true);;
-        p)  ACTIONS+=([pretend]=true);;
-        o)  ACTIONS+=([overwrite]=true);;
-        i)  ACTIONS+=([info]=true);;
+        f)  VALUES[from]="$OPTARG";;
+        t)  VALUES[to]="$OPTARG";;
+        c)  ACTIONS[create]=true;;
+        r)  ACTIONS[remove]=true;;
+        p)  ACTIONS[pretend]=true;;
+        o)  ACTIONS[overwrite]=true;;
+        i)  ACTIONS[info]=true;;
         *) usage;;
     esac
 done
+
+# -- BUSSINESS LOGIC:
 
 # --from is a must!
 if [[ -z ${VALUES[from]} ]]; then
@@ -74,13 +80,10 @@ IGNORED_FILE="${VALUES[from]}/.dotsignore"
 IGNORED+=(.git) # user should set it, but lets be safe!
 
 print_info() {
-    echo " -- general information --"
-
-    echo
     echo " -- Values"
     echo
     for v in "${!VALUES[@]}"; do
-        echo "Values: $v: ${VALUES[$v]}"
+        echo "$v: ${VALUES[$v]}"
     done
 
     echo
@@ -104,8 +107,7 @@ echo
 
 exit
 
-# ON GOING
-
+# ON-GOING
 for f in $(find "$FROM"); do
     FILE="${f#${FROM}/}"
 
@@ -114,6 +116,5 @@ for f in $(find "$FROM"); do
     echo "$FILE"
     # [[ $FILE =~ ^.git/ ]] && continue
 done
-
 
 exit
