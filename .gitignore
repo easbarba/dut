@@ -3,5 +3,8 @@
 *.log
 tmp/
 
-.clj-kondo/
-.lsp/
+.clj-kondo
+.lsp
+.cpcache
+.lsp
+.clj-kondo

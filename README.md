@@ -4,9 +4,9 @@ Yet another simple and opinionated dot files manager.
 | lang  | completion |
 |-------|------------|
 | ruby  | 97%        |
-| java  | 37%        |
 | bash  | 16%        |
 | guile | 12%        |
+| php   | 0%         |
 
 # Specification:
  - Exactly mirror target folder structure.
