@@ -16,4 +16,3 @@ $longopts  = array(
 $options = getopt($shortopts, $longopts);
 var_dump($options);
 
-?>
