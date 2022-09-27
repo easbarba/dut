@@ -22,14 +22,15 @@ Yet another simple and opinionated dot files manager.
 
 # Command-line options
     
-| option      	| description                         	|
+| Option      	| Description                         	|
 |-------------	|-------------------------------------	|
-| --to TO       | destination folder to deliver links   |
-| --from FROM   | target folder with dotfiles      	|
+| --to DIR      | destination folder to deliver links   |
+| --from DIR    | target folder with dotfiles      	|
 | --create    	| create links of dotfiles            	|
 | --remove    	| remove links from target folder   	|
 | --pretend   	| demonstrate files linking           	|
 | --overwrite 	| overwrite existent links            	|
+| --info 	    | provide additional information     	|
 
 ## Usage
 
