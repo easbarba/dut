@@ -58,14 +58,22 @@ func pretend() {}
 
 func remove() {}
 
+// INTERNALS
+
+// get all files to be ignored
+func ignoredFiles(root *string) []string {
+	var result []string
+	ignore, err := ioutil.ReadFile(filepath.Join(*root, ".dutignore"))
+
+	// no .dutignore file found,
+	// then set some sensible default files to ignore
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return []string{".git", ".dutignore"}
 	}
 
-	fixed_ignored := strings.Split(string(ignore), "\n")
-	fixed_root := filepath.Clean(*to)
-	crawler(fixed_root, fixed_ignored, *overwrite)
+	result = strings.Split(string(ignore), "\n")
+
+	return result
 }
 
 func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
