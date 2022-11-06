@@ -29,16 +29,10 @@ import (
 )
 
 func main() {
-	root := flag.String("deploy", "", "deploy dotfiles links")
-	force := flag.Bool("force", false, "force redeployment of dotfiles links")
-	flag.Parse()
+	create, remove, pretend, overwrite, info, to, from := parse()
+	fmt.Println(*create, *remove, *pretend, *overwrite, *to, *info, *from)
 
-	if *root == "" {
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	ignore, err := ioutil.ReadFile(filepath.Join(*root, ".dutignore"))
+	ignore, err := ioutil.ReadFile(filepath.Join(*to, ".dutignore"))
 
 	if err != nil {
 		fmt.Println(err)
@@ -46,8 +40,27 @@ func main() {
 	}
 
 	fixed_ignored := strings.Split(string(ignore), "\n")
-	fixed_root := filepath.Clean(*root)
-	crawler(fixed_root, fixed_ignored, *force)
+	fixed_root := filepath.Clean(*to)
+	crawler(fixed_root, fixed_ignored, *overwrite)
+}
+
+func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
+	create := flag.Bool("create", false, "create links of dotfiles")
+	remove := flag.Bool("remove", false, "remove links from target folder")
+	pretend := flag.Bool("pretend", false, "demonstrate files linking")
+	overwrite := flag.Bool("overwrite", false, "overwrite existent links")
+	info := flag.Bool("info", false, "provide additional information")
+	to := flag.String("to", "", "destination folder to deliver links")
+	from := flag.String("from", "", "target folder with dotfiles")
+
+	flag.Parse()
+
+	if *to == "" {
+		flag.Usage()
+		os.Exit(1)
+	}
+
+	return create, remove, pretend, overwrite, info, to, from
 }
 
 func crawler(root string, ignored []string, force bool) {
