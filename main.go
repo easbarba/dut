@@ -29,10 +29,14 @@ import (
 )
 
 func main() {
-	create, remove, pretend, overwrite, info, to, from := parse()
-	fmt.Println(*create, *remove, *pretend, *overwrite, *to, *info, *from)
+	create, remove, pretend, overwrite, info, destination, root := parse()
+	fmt.Println(*create, *remove, *pretend, *overwrite, *destination, *info, *root)
 
-	ignore, err := ioutil.ReadFile(filepath.Join(*to, ".dutignore"))
+	*root = filepath.Clean(*root) // remove trailing /
+	ignored := ignoredFiles(root)
+
+	crawler(*root, ignored)
+}
 
 	if err != nil {
 		fmt.Println(err)
