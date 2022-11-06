@@ -76,6 +76,7 @@ func ignoredFiles(root *string) []string {
 	return result
 }
 
+// command line arguments parser
 func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 	create := flag.Bool("create", false, "create links of dotfiles")
 	remove := flag.Bool("remove", false, "remove links from target folder")
@@ -87,7 +88,7 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 
 	flag.Parse()
 
-	if *to == "" {
+	if *from == "" {
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -95,26 +96,24 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 	return create, remove, pretend, overwrite, info, to, from
 }
 
-func crawler(root string, ignored []string, force bool) {
+func crawler(root string, ignored []string) {
 	filepath.Walk(root,
-		func(path string, info os.FileInfo, err error) error {
+		func(current_file string, info os.FileInfo, err error) error {
 			if err != nil {
 				fmt.Println(err)
 				return err
 			}
 
-			// check if it is to ignore file
-			if filterOut(root, ignored) {
+			if ignore_this(root, current_file, ignored) {
 				return nil
 			}
 
-			linkFile(path, force)
+			create(current_file)
+
 			return nil
 		})
 
-	println("")
-	fmt.Println("Ignored: ", ignored)
-	fmt.Print("Root: ", root)
+	info(ignored, root)
 }
 
 // ignore file if its is in .dutignored
