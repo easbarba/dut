@@ -117,22 +117,15 @@ func crawler(root string, ignored []string) {
 }
 
 // ignore file if its is in .dutignored
-func filterOut(root string, ignored []string) bool {
+func ignore_this(root, current_file string, ignored []string) bool {
+	_, ignored_prefix, _ := strings.Cut(current_file, root+"/")
+
 	for _, item := range ignored {
-		rooted_item := filepath.Join(root, item)
-		if item == "" || strings.HasPrefix(root, rooted_item) {
+		if strings.HasPrefix(item, ignored_prefix) {
+			// fmt.Println("ignore:", current_file)
 			return true
 		}
 	}
 
 	return false
-}
-
-func linkFile(path string, force bool) {
-	if force {
-		fmt.Print("Forcing re-linking")
-	}
-
-	// finally, print file to be linked
-	fmt.Println(path)
 }
