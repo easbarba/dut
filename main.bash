@@ -89,7 +89,7 @@ done
 [[ -z ${VALUES[from]} ]] && echo "Missing required option: '--from DIR'" && exit
 
 # LIST OF FILES TO BE IGNORED
-IGNORED_FILE="${VALUES[from]}/.dotsignore"
+IGNORED_FILE="${VALUES[from]}/.dutignore"
 [[ -f $IGNORED_FILE ]] && mapfile -t IGNORED <"$IGNORED_FILE"
 IGNORED+=(.git) # user should set it, but lets be safe!
 

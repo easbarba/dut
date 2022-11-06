@@ -38,7 +38,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	ignore, err := ioutil.ReadFile(filepath.Join(*root, ".dotsignore"))
+	ignore, err := ioutil.ReadFile(filepath.Join(*root, ".dutignore"))
 
 	if err != nil {
 		fmt.Println(err)
@@ -72,7 +72,7 @@ func crawler(root string, ignored []string, force bool) {
 	fmt.Print("Root: ", root)
 }
 
-// ignore file if its is in .dotsignored
+// ignore file if its is in .dutignored
 func filterOut(root string, ignored []string) bool {
 	for _, item := range ignored {
 		rooted_item := filepath.Join(root, item)

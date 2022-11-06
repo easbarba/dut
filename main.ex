@@ -31,7 +31,7 @@ defmodule Dots do
   defp ignored(root, {:ok, files}) do
     File.stream!(files)
     |> Enum.map(&String.trim(&1))
-    |> Enum.concat([".dotsignore"])
+    |> Enum.concat([".dutignore"])
     |> Enum.map(&Path.join(root, &1))
     |> MapSet.new()
   end
@@ -41,7 +41,7 @@ defmodule Dots do
   end
 
   defp ignored_exist?(root) do
-    root = Path.join(root, ".dotsignore")
+    root = Path.join(root, ".dutignore")
     if File.exists?(root), do: {:ok, root}, else: {:error, nil}
   end
 

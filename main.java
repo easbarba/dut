@@ -103,10 +103,10 @@ class Ignored {
     this.source = source;
   }
 
-  final String[] defaultOnes = { ".git", ".dotsignore" };
+  final String[] defaultOnes = { ".git", ".dutignore" };
 
   List<String> ignoredOnes() {
-    var dotsFile = Path.of(this.source, ".dotsignore");
+    var dotsFile = Path.of(this.source, ".dutignore");
     List<String> dots = null;
 
     try {

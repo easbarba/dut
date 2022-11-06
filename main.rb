@@ -41,8 +41,8 @@ class Farm
 
   # ignore these dotfiles
   def dotignored
-    dots = @from.join('.dotsignore').read.split "\n"
-    dots.append '.dotsignore' # ignore itself too, ofc!
+    dots = @from.join('.dutignore').read.split "\n"
+    dots.append '.dutignore' # ignore itself too, ofc!
     dots.uniq # users may not notice duplicates.
   end
 
@@ -51,7 +51,7 @@ class Farm
     dotignored.map { |x| item.to_path.include? @from.join(x).to_path }.any?
   end
 
-  # organize listed items in .dotsignore as pathname
+  # organize listed items in .dutignore as pathname
   def all_items
     { files: [], folders: [] }.tap do |x|
       Find.find(@from) do |item|
