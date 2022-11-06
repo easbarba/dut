@@ -38,6 +38,26 @@ func main() {
 	crawler(*root, ignored)
 }
 
+// ACTIONS
+
+func info(ignored []string, root string) {
+	println("")
+	fmt.Println("Ignored: ", ignored)
+	fmt.Print("Root: ", root)
+}
+
+func create(file string) {
+	fmt.Println("linking:", file)
+}
+
+func overwrite() {
+	fmt.Print("overwriting")
+}
+
+func pretend() {}
+
+func remove() {}
+
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
