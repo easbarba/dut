@@ -95,9 +95,15 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 
 	flag.Parse()
 
+	flag.Usage = func() {
+		fmt.Fprintf(flag.CommandLine.Output(), "dut, yet another simple dotfiles manager. \n\n")
+		fmt.Fprintln(flag.CommandLine.Output(), "Usage information:")
+		flag.PrintDefaults()
+	}
+
 	if *from == "" {
 		flag.Usage()
-		os.Exit(1)
+		os.Exit(0)
 	}
 
 	return create, remove, pretend, overwrite, info, to, from
