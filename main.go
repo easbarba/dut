@@ -33,13 +33,12 @@ var root, destination string
 var homeDir, _ = os.UserHomeDir()
 
 func main() {
-	create, remove, pretend, overwrite, info, to, from := parse()
-	fmt.Println(*create, *remove, *pretend, *overwrite, *to, *info, *from)
+	actions, to, from := parse()
 
 	root = filepath.Clean(*from) // remove trailing /
 	destination = filepath.Clean(*to)
 
-	crawler(root, ignoredFiles())
+	crawler(root, ignoredFiles(), actions)
 }
 
 // ACTIONS
@@ -88,12 +87,20 @@ func ignoredFiles() []string {
 }
 
 // command line arguments parser
-func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
+func parse() (map[string]*bool, *string, *string) {
 	create := flag.Bool("create", false, "create links of dotfiles")
 	remove := flag.Bool("remove", false, "remove links from target folder")
 	pretend := flag.Bool("pretend", false, "demonstrate files linking")
 	overwrite := flag.Bool("overwrite", false, "overwrite existent links")
 	info := flag.Bool("info", false, "provide additional information")
+
+	actions := map[string]*bool{
+		"create":    create,
+		"remove":    remove,
+		"pretend":   pretend,
+		"overwrite": overwrite,
+		"info":      info,
+	}
 
 	to := flag.String("to", "", "destination folder to deliver links")
 	from := flag.String("from", "", "target folder with dotfiles")
@@ -111,10 +118,10 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 		os.Exit(0)
 	}
 
-	return create, remove, pretend, overwrite, info, to, from
+	return actions, to, from
 }
 
-func crawler(root string, ignored []string) {
+func crawler(root string, ignored []string, actions map[string]*bool) {
 	filepath.Walk(root, func(current_file string, info os.FileInfo, err error) error {
 		if err != nil {
 			fmt.Println(err)
@@ -139,7 +146,6 @@ func ignore_this(current_file string, ignored []string) bool {
 
 	for _, item := range ignored {
 		if strings.HasPrefix(item, ignored_prefix) {
-			// fmt.Println("ignoring:", item)
 			return true
 		}
 	}
