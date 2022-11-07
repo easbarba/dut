@@ -28,14 +28,17 @@ import (
 	"strings"
 )
 
+var root, destination string
+var homeDir, _ = os.UserHomeDir()
+
 func main() {
-	create, remove, pretend, overwrite, info, destination, root := parse()
-	fmt.Println(*create, *remove, *pretend, *overwrite, *destination, *info, *root)
+	create, remove, pretend, overwrite, info, to, from := parse()
+	fmt.Println(*create, *remove, *pretend, *overwrite, *to, *info, *from)
 
-	*root = filepath.Clean(*root) // remove trailing /
-	ignored := ignoredFiles(root)
+	root = filepath.Clean(*from) // remove trailing /
+	destination = filepath.Clean(*to)
 
-	crawler(*root, ignored)
+	crawler(root, ignoredFiles())
 }
 
 // ACTIONS
