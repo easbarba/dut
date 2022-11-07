@@ -176,7 +176,7 @@ end
 
 params = {}
 options = OptionParser.new do |parser|
-  parser.banner = 'Usage: dots [options]'
+  parser.banner = 'Usage: dut [options]'
 
   parser.on('-f', '--from DIR', String, 'folder with dotfiles')
   parser.on('-t', '--to DIR', String, 'location where to link files')
