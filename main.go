@@ -20,6 +20,7 @@ package main
  */
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -54,13 +55,17 @@ func create(file string) {
 	fmt.Println(file, "-->", homey_file)
 }
 
-func overwrite() {
-	fmt.Print("overwriting")
+func overwrite(file string) {
+	errors.New("Not implemented")
 }
 
-func pretend() {}
+func pretend(file string) {
+	errors.New("Not implemented")
+}
 
-func remove() {}
+func remove(file string) {
+	errors.New("Not implemented")
+}
 
 // INTERNALS
 
