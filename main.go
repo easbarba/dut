@@ -50,7 +50,8 @@ func info(ignored []string, root string) {
 }
 
 func create(file string) {
-	fmt.Println("linking:", file)
+	homey_file := strings.Replace(file, root, homeDir, 1)
+	fmt.Println(file, "-->", homey_file)
 }
 
 func overwrite() {
@@ -64,17 +65,19 @@ func remove() {}
 // INTERNALS
 
 // get all files to be ignored
-func ignoredFiles(root *string) []string {
+func ignoredFiles() []string {
 	var result []string
-	ignore, err := ioutil.ReadFile(filepath.Join(*root, ".dutignore"))
+	var ignoreFile = ".dutignore"
+	ignore, err := ioutil.ReadFile(filepath.Join(root, ignoreFile))
 
 	// no .dutignore file found,
 	// then set some sensible default files to ignore
 	if err != nil {
-		return []string{".git", ".dutignore"}
+		return []string{".git", ignoreFile}
 	}
 
 	result = strings.Split(string(ignore), "\n")
+	result = append(result, ignoreFile)
 
 	return result
 }
@@ -86,6 +89,7 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 	pretend := flag.Bool("pretend", false, "demonstrate files linking")
 	overwrite := flag.Bool("overwrite", false, "overwrite existent links")
 	info := flag.Bool("info", false, "provide additional information")
+
 	to := flag.String("to", "", "destination folder to deliver links")
 	from := flag.String("from", "", "target folder with dotfiles")
 
@@ -100,32 +104,31 @@ func parse() (*bool, *bool, *bool, *bool, *bool, *string, *string) {
 }
 
 func crawler(root string, ignored []string) {
-	filepath.Walk(root,
-		func(current_file string, info os.FileInfo, err error) error {
-			if err != nil {
-				fmt.Println(err)
-				return err
-			}
+	filepath.Walk(root, func(current_file string, info os.FileInfo, err error) error {
+		if err != nil {
+			fmt.Println(err)
+			return err
+		}
 
-			if ignore_this(root, current_file, ignored) {
-				return nil
-			}
-
-			create(current_file)
-
+		if ignore_this(current_file, ignored) {
 			return nil
-		})
+		}
+
+		create(current_file)
+
+		return nil
+	})
 
 	info(ignored, root)
 }
 
 // ignore file if its is in .dutignored
-func ignore_this(root, current_file string, ignored []string) bool {
+func ignore_this(current_file string, ignored []string) bool {
 	_, ignored_prefix, _ := strings.Cut(current_file, root+"/")
 
 	for _, item := range ignored {
 		if strings.HasPrefix(item, ignored_prefix) {
-			// fmt.Println("ignore:", current_file)
+			// fmt.Println("ignoring:", item)
 			return true
 		}
 	}
