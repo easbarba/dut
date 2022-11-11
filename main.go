@@ -122,6 +122,10 @@ func parse() (map[string]*bool, *string, *string) {
 }
 
 func crawler(root string, ignored []string, actions map[string]*bool) {
+	if actions["info"] {
+		info(ignored, root)
+	}
+
 	filepath.Walk(root, func(current_file string, info os.FileInfo, err error) error {
 		if err != nil {
 			fmt.Println(err)
@@ -136,8 +140,6 @@ func crawler(root string, ignored []string, actions map[string]*bool) {
 
 		return nil
 	})
-
-	info(ignored, root)
 }
 
 // ignore file if its is in .dutignored
@@ -146,6 +148,7 @@ func ignore_this(current_file string, ignored []string) bool {
 
 	for _, item := range ignored {
 		if strings.HasPrefix(item, ignored_prefix) {
+			// TODO: still not matching correctly
 			return true
 		}
 	}

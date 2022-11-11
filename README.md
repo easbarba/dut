@@ -1,12 +1,12 @@
 # Dot
 Yet another simple and opinionated dot files manager.
 
-| lang       | completion |
-|------------|------------|
-| ruby       | 97%        |
-| bash       | 16%        |
-| guile      | 12%        |
-| javascript | 01%        |
+| lang   | completion |
+|--------|------------|
+| ruby   | 97%        |
+| bash   | 16%        |
+| guile  | 12%        |
+| golang | 10%        |
 
 # Specification:
  - Exactly mirror target folder structure.
