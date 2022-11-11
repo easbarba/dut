@@ -5,7 +5,7 @@
 # TODO: walk through directories and perform actions per folder
 # TODO: Accept git commit sha as source to symlink deployment.
 # TODO: Read-only symlinks.
-# TODO: dotsignore to accept hash-like folder. eg: .config{foo,bar,meh,forevis}
+# TODO: .dutignore to accept hash-like folder. eg: .config{foo,bar,meh,forevis}
 # TODO: set minimal permission to 0744
 
 

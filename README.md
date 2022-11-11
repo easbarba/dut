@@ -11,7 +11,7 @@ Yet another simple and opinionated dot files manager.
 # Specification:
  - Exactly mirror target folder structure.
  - Folders are created not linked to avoid common issues.
- - If a `.dotsignore` is present are files listed are to be ignored, eg: `LICENSE`.
+ - If a `.dutignore` is present are files listed are to be ignored, eg: `LICENSE`.
  - `.git` is ignored by default.
  - Remove all linked files, but preserve folders.
  - Overwrite present links [optional].
@@ -48,7 +48,7 @@ dot --help
 - Keep history of early commands.
 - Git commit SHA as source to link.
 - Read-only symbolic links.
-- `.dotsignore` support hash-like folder. eg: .config{foo,bar,meh,forevis}
+- `.dutignore` support hash-like folder. eg: .config{foo,bar,meh,forevis}
 - Rollback feature.
 - Log operations
 - JSON output of last files linked operation, useful for rollback
