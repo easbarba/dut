@@ -1,4 +1,4 @@
-# Dot
+# Dut
 Yet another simple and opinionated dot files manager.
 
 | lang   | completion |
@@ -37,12 +37,12 @@ Yet another simple and opinionated dot files manager.
 ## Usage
 
 ```sh
-dot --from /data/dotfiles-repo --create
-dot --from /data/bin --to $HOME/.local/bin --overwrite
-dot --from /data/bin --to $HOME/.local/bin --clean
-dot --from /data/dotfiles-repo --pretend
-dot --info
-dot --help
+dut --from /data/dotfiles-repo --create
+dut --from /data/bin --to $HOME/.local/bin --overwrite
+dut --from /data/bin --to $HOME/.local/bin --clean
+dut --from /data/dotfiles-repo --pretend
+dut --info
+dut --help
 ```
 
 ## TODO
