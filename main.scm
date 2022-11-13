@@ -32,15 +32,15 @@
 (define (dutignore-exist? file)
   (file-exists? file))
 
-(define (dutignore root)
-  (string-append root "/" dutignore-filename))
+(define (dutignore target)
+  (string-append target "/" dutignore-filename))
 
-(define (ignored-files root)
+(define (ignored-files target)
   (let* ((listed (string-split
-                  (call-with-input-file (dutignore root) get-string-all)
+                  (call-with-input-file (dutignore target) get-string-all)
                   #\newline))
          (all (cons ".git" (cons ".dutignore" listed))))
-    (map (lambda (file)(string-append root "/" file)) all)))
+    all)) ;; (map (lambda (file)(string-append target "/" file)) all)
 
 ;; Folder residing all dotfiles to link.
 (define (get-target options)
@@ -67,7 +67,7 @@
   (newline)
   (display (string-append "destination: " (get-destination options)))
   (newline)
-  (display (string-append "dutignore: " (dutignore (get-target options)))))
+  (display (string-append "dutignore: " (string-join (ignored-files (get-target options)) " "))))
 
 ;; CLI PARSING
 
@@ -93,7 +93,7 @@
                         (from      (single-char #\f) (value #t))
                         (help      (single-char #\h) (value #f))))
 
-(define (cli-parser args root)
+(define (cli-parser args target)
   (let* ((option-spec option-list)
          (options (getopt-long args option-spec)))
     (option-run options)))
@@ -110,7 +110,7 @@
           (else                       (usage-options)))))
 
 (define (main args)
-  (let ((root (if (null? args)
+  (let ((target (if (null? args)
                   (canonicalize-path (cadr args))
                   "")))
-    (cli-parser args root)))
+    (cli-parser args target)))
