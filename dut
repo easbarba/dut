@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-
-ruby ./main.rb
-# go run ./main.go
