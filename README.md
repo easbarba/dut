@@ -4,9 +4,9 @@ Yet another simple and opinionated dot files manager.
 | lang   | completion |
 |--------|------------|
 | ruby   | 97%        |
+| guile  | 17%        |
 | bash   | 16%        |
-| guile  | 12%        |
-| golang | 10%        |
+| golang | 13%        |
 
 # Specification:
  - Exactly mirror target folder structure.
@@ -22,15 +22,17 @@ Yet another simple and opinionated dot files manager.
 
 # Command-line options
     
-| Option         | Description                          |
-|----------------|--------------------------------------|
-| --to DIR, -t   | destination folder to deliver links  |
-| --from DIR, -f | target folder with dotfiles          |
-| --create, c    | create links of dotfiles             |
-| --remove, r    | remove links from target folder      |
-| --pretend, p   | demonstrate files linking            |
-| --overwrite, o | overwrite existent links             |
-| --info, i      | provide additional information       |
+| Option             | Description                          |
+|--------------------|--------------------------------------|
+| --to DIR, -t       | destination folder to deliver links  |
+| --from DIR, -f     | target folder with dotfiles          |
+| --create, -c       | create links of dotfiles             |
+| --remove, -r       | remove links from target folder      |
+| --pretend, -p      | demonstrate files linking            |
+| --overwrite, -o    | overwrite existent links             |
+| --info, -i         | provide additional information       |
+| --version, -v      | display version                      |
+| --help, -h         | display help usage                   |
 
 ## Usage
 
