@@ -42,42 +42,72 @@
          (all (cons ".git" (cons ".dutignore" listed))))
     (map (lambda (file)(string-append root "/" file)) all)))
 
-(define (info root)
-  (display (string-append "root: " root))
-  (newline)
-  (display (string-append
-            "dutignore: " (dutignore root)
-            " - found? " (if (dutignore-exist? root) "yep" "nope"))))
+;; Folder residing all dotfiles to link.
+(define (get-target options)
+  (canonicalize-path (cdr (assv 'from options))))
 
-(define (dryrun) (display 'dryrunning))
-(define (symlink) (display 'symlinking))
+;; Destination folder, defaults to $HOME.
+(define (get-destination options)
+  (if (assq 'to options)
+      (canonicalize-path (cdr (assv 'to options)))
+      home))
+
+;; ACTIONS
+
+(define (create) (display 'creating))
+
+(define (remove) (display 'remove))
+
+(define (pretend) (display 'dryrunning))
+
+(define (overwrite) (display 'overwriting))
+
+(define (info options)
+  (display (string-append "target: " (get-target options)))
+  (newline)
+  (display (string-append "destination: " (get-destination options)))
+  (newline)
+  (display (string-append "dutignore: " (dutignore (get-target options)))))
+
+;; CLI PARSING
 
 (define (usage-options)
-  (display "dots [options]
-  -v, --version    Display version
-  -s, --symlink    Deploy dotfiles symlinking
-  -d, --dryrun     Mimic symlinking deployment
-  -i, --info       Miscelleanous information
-  -h, --help       Display this help"))
+  (display "dut [options]
+  -t DIR, --to DIR      destination folder to deliver links
+  -f DIR, --from DIR    target folder with dotfiles
+  -c, --create          create links of dotfiles
+  -r, --remove          remove links from target folder
+  -p, --pretend         demonstrate files linking
+  -o, --overwrite       overwrite existent links
+  -i, --info            provide additional information
+  -v, --version         display version
+  -h, --help            display this help"))
+
+(define option-list '((version     (single-char #\v) (value #f))
+                        (create    (single-char #\c) (value #f))
+                        (remove    (single-char #\r) (value #f))
+                        (pretend   (single-char #\p) (value #f))
+                        (overwrite (single-char #\o) (value #f))
+                        (info      (single-char #\i) (value #f))
+                        (to        (single-char #\t) (value optional))
+                        (from      (single-char #\f) (value #t))
+                        (help      (single-char #\h) (value #f))))
 
 (define (cli-parser args root)
-  (let* ((option-spec '((version (single-char #\v) (value #f))
-                        (symlink (single-char #\s) (value #f))
-                        (info    (single-char #\i) (value #f))
-                        (dryrun  (single-char #\d) (value #f))
-                        (help    (single-char #\h) (value #f))))
+  (let* ((option-spec option-list)
          (options (getopt-long args option-spec)))
     (option-run options)))
 
 (define (option-run options)
-  (let ((option-wanted (lambda (option)
-                         (option-ref options option #f))))
-    (cond ((option-wanted 'version) (version))
-          ((option-wanted 'help)    (usage-options))
-          ((option-wanted 'symlink) (symlink))
-          ((option-wanted 'dryrun)  (dryrun))
-          ((option-wanted 'info)    (info root))
-          (else                     (usage-options)))))
+  (let ((option-wanted (lambda (option) (option-ref options option #f))))
+    (cond ((option-wanted 'version)   (version))
+          ((option-wanted 'help)      (usage-options))
+          ((option-wanted 'create)    (create options))
+          ((option-wanted 'remove)    (remove options))
+          ((option-wanted 'pretend)   (pretend options))
+          ((option-wanted 'overwrite) (overwrite options))
+          ((option-wanted 'info)      (info options))
+          (else                       (usage-options)))))
 
 (define (main args)
   (let ((root (if (null? args)
