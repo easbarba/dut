@@ -3,11 +3,11 @@ Yet another simple and opinionated dot files manager.
 
 | lang   | completion |
 |--------|------------|
-| ruby   | 97%        |
-| guile  | 17%        |
-| bash   | 16%        |
-| golang | 13%        |
-| perl   | 07%        |
+| ruby   | fully      |
+| guile  | initial    |
+| bash   | initial    |
+| golang | initial    |
+| perl   | initial    |
 
 # Specification:
  - Exactly mirror target folder structure.
