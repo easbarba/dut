@@ -7,6 +7,7 @@ Yet another simple and opinionated dot files manager.
 | guile  | 17%        |
 | bash   | 16%        |
 | golang | 13%        |
+| perl   | 07%        |
 
 # Specification:
  - Exactly mirror target folder structure.
