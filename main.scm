@@ -22,7 +22,8 @@
 (import (rnrs base)
         (rnrs io ports)
         (rnrs io simple)
-        (ice-9 getopt-long))
+        (ice-9 getopt-long)
+        (ice-9 ftw))
 
 (define home (getenv "HOME"))
 (define (version) (display "0.0.1"))
@@ -54,13 +55,20 @@
 
 ;; ACTIONS
 
-(define (create) (display 'creating))
+(define (create options)
 
-(define (remove) (display 'remove))
+  (ftw (get-target options) (lambda (filename statinfo flag)
+                              (let ((filename-path (string-append (get-target options) filename)))
+                                (if (not (member (string- filename) '(".git" ".svn" "CVS")))
+                                  (begin (display (string-append (get-target options) filename))
+                                         (newline))))
+                              #t)))
 
-(define (pretend) (display 'dryrunning))
+(define (remove options) (display 'remove))
 
-(define (overwrite) (display 'overwriting))
+(define (pretend options) (display 'dryrunning))
+
+(define (overwrite options) (display 'overwriting))
 
 (define (info options)
   (display (string-append "target: " (get-target options)))
@@ -71,7 +79,7 @@
 
 ;; CLI PARSING
 
-(define (usage-options)
+(define (usage-banner)
   (display "dut [options]
   -t DIR, --to DIR      destination folder to deliver links
   -f DIR, --from DIR    target folder with dotfiles
@@ -101,13 +109,13 @@
 (define (option-run options)
   (let ((option-wanted (lambda (option) (option-ref options option #f))))
     (cond ((option-wanted 'version)   (version))
-          ((option-wanted 'help)      (usage-options))
           ((option-wanted 'create)    (create options))
           ((option-wanted 'remove)    (remove options))
           ((option-wanted 'pretend)   (pretend options))
           ((option-wanted 'overwrite) (overwrite options))
           ((option-wanted 'info)      (info options))
-          (else                       (usage-options)))))
+          ((option-wanted 'help)      (usage-banner))
+          (else                       (usage-banner)))))
 
 (define (main args)
   (let ((target (if (null? args)
