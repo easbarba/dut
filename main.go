@@ -30,7 +30,16 @@ import (
 )
 
 var root, destination string
-var homeDir, _ = os.UserHomeDir()
+
+func homeDir() string {
+	home, err := os.UserHomeDir()
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return home
+}
 
 func main() {
 	actions, to, from := parse()
@@ -50,7 +59,7 @@ func info(ignored []string, root string) {
 }
 
 func create(file string) {
-	homey_file := strings.Replace(file, root, homeDir, 1)
+	homey_file := strings.Replace(file, root, homeDir(), 1)
 	fmt.Println(file, "-->", homey_file)
 }
 
@@ -121,8 +130,24 @@ func parse() (map[string]*bool, *string, *string) {
 	return actions, to, from
 }
 
+// actionSelector pick action selected
+func actionSelector(cFile string, actions map[string]*bool) {
+	switch {
+	case *actions["create"]:
+		create(cFile)
+	case *actions["remove"]:
+		remove(cFile)
+	case *actions["pretend"]:
+		pretend(cFile)
+	case *actions["overwrite"]:
+		overwrite(cFile)
+	default:
+		fmt.Println("No action selected!")
+	}
+}
+
 func crawler(root string, ignored []string, actions map[string]*bool) {
-	if actions["info"] {
+	if *actions["info"] {
 		info(ignored, root)
 	}
 
@@ -136,7 +161,7 @@ func crawler(root string, ignored []string, actions map[string]*bool) {
 			return nil
 		}
 
-		create(current_file)
+		actionSelector(current_file, actions)
 
 		return nil
 	})
