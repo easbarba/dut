@@ -4,10 +4,11 @@ Yet another simple and opinionated dot files manager.
 | lang   | completion |
 |--------|------------|
 | ruby   | fully      |
+| golang | mostly     |
+| java   | initial    |
+| perl   | initial    |
 | guile  | initial    |
 | bash   | initial    |
-| golang | initial    |
-| perl   | initial    |
 
 # Specification:
  - Exactly mirror target folder structure.
