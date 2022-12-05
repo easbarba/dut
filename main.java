@@ -41,8 +41,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-@Command(name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1",
-         description = "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
+@Command(name = "Dot", mixinStandardHelpOptions = true, version = "Dot 0.1", description = "create symbolic links of a folder mirroring its tree structure into $HOME or custom folder")
 class Main implements Callable<Integer> {
 
   @Option(names = { "-o", "--overwrite" }, description = "overwrite existent links.")
@@ -57,7 +56,8 @@ class Main implements Callable<Integer> {
   @Option(names = { "-i", "--info" }, description = "provide more information.")
   private boolean information;
 
-  @Option(names = { "-f", "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.", required = true)
+  @Option(names = { "-f",
+      "--from" }, paramLabel = "FOLDER", description = "source folder with all dotfiles.", required = true)
   String source;
 
   @Option(names = { "-t", "--to" }, paramLabel = "FOLDER", description = "folder to deliver symbolic links.")
@@ -69,8 +69,8 @@ class Main implements Callable<Integer> {
   }
 
   String infoList() {
-    var result = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s\n",
-                               source, destination, overwrite, pretend, create);
+    var result = String.format("-- information -- \n from: %s - to: %s - over: %s - pret: %s - create: %s\n", source,
+        destination, overwrite, pretend, create);
 
     return result;
   }
@@ -89,8 +89,8 @@ class Main implements Callable<Integer> {
     var ignore = new Ignored(source);
     System.out.println(String.format("Ignored: %s", ignore.finaList()));
 
-    // var create = new Create(source, null);
-    // create.run();
+    var actions = new Actions(source, ignore.ignoredOnes());
+    actions.create();
 
     return 0;
   }
@@ -111,10 +111,7 @@ class Ignored {
 
     try {
       Stream<String> listedDots = Files.lines(dotsFile);
-      dots = listedDots
-        .distinct()
-        .sorted(Comparator.reverseOrder())
-        .collect(Collectors.toList());
+      dots = listedDots.distinct().sorted(Comparator.reverseOrder()).collect(Collectors.toList());
 
       listedDots.close();
     } catch (IOException e) {
@@ -132,16 +129,25 @@ class Ignored {
   }
 }
 
-class Create {
+class Actions {
   List<String> ignoredOnes;
   String source;
   String destination;
   String home = System.getProperty("user.home");
 
-  public Create(String source, String destination, List<String> ignoredOnes) {
+  public Actions(String source, String destination, List<String> ignoredOnes) {
     this.source = source;
     this.destination = destination;
     this.ignoredOnes = ignoredOnes;
+  }
+
+  public Actions(String source, List<String> ignoredOnes) {
+    this.source = source;
+    this.ignoredOnes = ignoredOnes;
+  }
+
+  public void create() {
+    throw new UnsupportedOperationException("not implemented");
   }
 
   public void clean() {
@@ -154,7 +160,6 @@ class Create {
 
   public void pretend() {
     throw new UnsupportedOperationException("not implemented");
-
   }
 
   void apply() {
