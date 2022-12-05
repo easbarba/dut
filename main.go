@@ -167,13 +167,13 @@ func crawler(root string, ignored []string, actions map[string]*bool) {
 	})
 }
 
-// ignore file if its is in .dutignored
+// ignore_this ignores current file if either its absolutely path
+// or its parent folder is listed in the .dutignored
 func ignore_this(current_file string, ignored []string) bool {
-	_, ignored_prefix, _ := strings.Cut(current_file, root+"/")
+	_, file_wo_root, _ := strings.Cut(current_file, root+"/")
 
 	for _, item := range ignored {
-		if strings.HasPrefix(item, ignored_prefix) {
-			// TODO: still not matching correctly
+		if strings.HasPrefix(item, file_wo_root) { // TODO: still not matching correctly
 			return true
 		}
 	}
