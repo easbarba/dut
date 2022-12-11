@@ -50,6 +50,10 @@ func main() {
 	crawler(root, ignoredFiles(), actions)
 }
 
+func homey(file string) string {
+	return strings.Replace(file, root, homeDir(), 1)
+}
+
 // ACTIONS
 
 func info(ignored []string, root string) {
