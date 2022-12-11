@@ -203,7 +203,12 @@ func ignore_this(current_file string, ignored []string) bool {
 	_, file_wo_root, _ := strings.Cut(current_file, root+"/")
 
 	for _, item := range ignored {
-		if strings.HasPrefix(item, file_wo_root) { // TODO: still not matching correctly
+		// ignore empty string
+		if item == "" {
+			break
+		}
+
+		if strings.HasPrefix(file_wo_root, item) == true {
 			return true
 		}
 	}
