@@ -54,6 +54,32 @@ func homey(file string) string {
 	return strings.Replace(file, root, homeDir(), 1)
 }
 
+func mkdir(file, newfile string) {
+	rootfile, err := os.Open(file)
+	if err != nil {
+		println(err)
+	}
+
+	defer rootfile.Close()
+
+	fileInfo, err := rootfile.Stat()
+	if err != nil {
+		println(err)
+	}
+
+	if fileInfo.IsDir() {
+		// if homey folder does not exist, create
+		if _, err := os.Stat(newfile); err != nil {
+			println("Directory not found, creating!")
+
+			err = os.Mkdir(newfile, 0755)
+			if err != nil {
+				panic(err)
+			}
+		}
+	}
+}
+
 // ACTIONS
 
 func info(ignored []string, root string) {
