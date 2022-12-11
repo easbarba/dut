@@ -50,6 +50,8 @@ func main() {
 	crawler(root, ignoredFiles(), actions)
 }
 
+// HELPERS
+
 func homey(file string) string {
 	return strings.Replace(file, root, homeDir(), 1)
 }
@@ -85,12 +87,13 @@ func mkdir(file, newfile string) {
 func info(ignored []string, root string) {
 	println("")
 	fmt.Println("Ignored: ", ignored)
-	fmt.Print("Root: ", root)
+	fmt.Println("Root: ", root)
+	fmt.Println()
 }
 
 func create(file string) {
-	homey_file := strings.Replace(file, root, homeDir(), 1)
-	fmt.Println(file, "-->", homey_file)
+	fmt.Println(file, "-->", homey(file))
+	mkdir(file, homey(file))
 }
 
 func overwrite(file string) {
@@ -110,19 +113,18 @@ func remove(file string) {
 // get all files to be ignored
 func ignoredFiles() []string {
 	var result []string
-	var ignoreFile = ".dutignore"
-	ignore, err := ioutil.ReadFile(filepath.Join(root, ignoreFile))
+	var ignoreFileName = ".dutignore"
+	ignoreList, err := ioutil.ReadFile(filepath.Join(root, ignoreFileName))
 
 	// no .dutignore file found,
 	// then set some sensible default files to ignore
 	if err != nil {
-		return []string{".git", ignoreFile}
+		return []string{".git", ignoreFileName}
 	}
 
-	result = strings.Split(string(ignore), "\n")
-	result = append(result, ignoreFile)
+	result = strings.Split(string(ignoreList), "\n")
 
-	return result
+	return append(result, ".git", ignoreFileName)
 }
 
 // command line arguments parser
@@ -160,8 +162,8 @@ func parse() (map[string]*bool, *string, *string) {
 	return actions, to, from
 }
 
-// actionSelector pick action selected
-func actionSelector(cFile string, actions map[string]*bool) {
+// picker pick action selected
+func picker(cFile string, actions map[string]*bool) {
 	switch {
 	case *actions["create"]:
 		create(cFile)
@@ -187,11 +189,15 @@ func crawler(root string, ignored []string, actions map[string]*bool) {
 			return err
 		}
 
-		if ignore_this(current_file, ignored) {
+		// ignore root folder
+		if current_file == root {
 			return nil
 		}
 
-		actionSelector(current_file, actions)
+		// ignore files listed in .dutignore
+		if ignore_this(current_file, ignored) == false {
+			picker(current_file, actions)
+		}
 
 		return nil
 	})
