@@ -1,14 +1,14 @@
 # Dut
 Yet another simple and opinionated dot files manager.
 
-| lang   | completion |
-|--------|------------|
-| ruby   | fully      |
-| golang | mostly     |
-| java   | initial    |
-| perl   | initial    |
-| guile  | initial    |
-| bash   | initial    |
+| lang   | completion   |
+|--------|--------------|
+| ruby   | fully        |
+| golang | almost there |
+| java   | initial      |
+| perl   | initial      |
+| guile  | initial      |
+| bash   | initial      |
 
 # Specification:
  - Exactly mirror target folder structure.
