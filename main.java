@@ -76,23 +76,45 @@ class Main implements Callable<Integer> {
   }
 
   @Override
-  public Integer call() throws Exception { // your business logic goes here...
-
-    if (source.isEmpty()) {
-
-    }
+  public Integer call() throws Exception {
+    // if (source.isEmpty()) {
+    // }
 
     if (information) {
       System.out.println(infoList());
     }
 
-    var ignore = new Ignored(source);
-    System.out.println(String.format("Ignored: %s", ignore.finaList()));
-
-    var actions = new Actions(source, ignore.ignoredOnes());
-    actions.create();
+    apply();
 
     return 0;
+  }
+
+  void apply() {
+    Path start = FileSystems.getDefault().getPath(source);
+
+    try {
+      Files.walk(start)
+          .filter(
+              path -> ignore.ignoredOnes.stream().map(i -> Path.of(source, i).toString().startsWith(path.toString())))
+          .forEach(link -> {
+            link.filter(path -> path.toFile().isFile());
+
+            var actions = new Actions(source);
+            var ignore = new Ignored(source);
+            // System.out.println(String.format("Ignored: %s", ignore.finaList()));
+
+            if (create) {
+              Actions.create(link);
+            }
+
+            if (remove) {
+              Actions.remove(link);
+            }
+
+          });
+    } catch (IOException e) {
+      System.out.println(e);
+    }
   }
 }
 
@@ -130,76 +152,59 @@ class Ignored {
 }
 
 class Actions {
-  List<String> ignoredOnes;
   String source;
   String destination;
   String home = System.getProperty("user.home");
+  Helpers helpers = new Helpers();
 
-  public Actions(String source, String destination, List<String> ignoredOnes) {
+  public Actions(String source, String destination) {
     this.source = source;
     this.destination = destination;
-    this.ignoredOnes = ignoredOnes;
   }
 
-  public Actions(String source, List<String> ignoredOnes) {
+  public Actions(String source) {
     this.source = source;
-    this.ignoredOnes = ignoredOnes;
   }
 
-  public void create() {
+  public void create(String link) {
+    helpers.make_folder(link);
+    helpers.backup_item(link);
+    helpers.link_file(link, link); // target
+    helpers.fix_perm(link);
+  }
+
+  public void clean(String link) {
+    helpers.rm_faulty_link(link);
+  }
+
+  public void overwrite(String link) {
+    helpers.link_file(link, link); // target
+    helpers.fix_perm(link);
+  }
+
+  public void pretend(String link) {
+    System.out.println(link, "->", "homey");
+  }
+}
+
+class Helpers {
+  public void make_folder(String link) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  public void clean() {
+  public void backup_item(String link) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  public void overwrite() {
+  public void remove_faulty_link(String link) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  public void pretend() {
+  public void link_file(String target, String link) {
     throw new UnsupportedOperationException("not implemented");
   }
 
-  void apply() {
-    throw new UnsupportedOperationException("not implemented");
-    // Path start = FileSystems.getDefault().getPath(source);
-
-    // try {
-    // Files.walk(start)
-    // .filter(path -> ignoredOnes.stream().map(i -> Path.of(source,
-    // i).toString().startsWith(path.toString())))
-    // .forEach(link -> {
-    // // .filter(path -> path.toFile().isFile())
-    // make_folder(link);
-    // backup_item(link);
-    // rm_faulty_link(link);
-    // link_file(link); // target
-    // fix_perm(link);
-    // });
-    // } catch (IOException e) {
-    // System.out.println(e);
-    // }
-  }
-
-  private void make_folder(String link) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  private void backup_item(String link) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  private void remove_faulty_link(String link) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  private void link_file(String target, String link) {
-    throw new UnsupportedOperationException("not implemented");
-  }
-
-  private void fix_permission(String link) {
+  public void fix_permission(String link) {
     throw new UnsupportedOperationException("not implemented");
   }
 }
