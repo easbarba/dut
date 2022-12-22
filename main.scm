@@ -81,17 +81,19 @@
 (define (ignore? filename options)
   (member #t (map (lambda (v) (string-prefix? filename v))
                   (ignored-files-final options))))
+
+;; Walk recursively through the TARGET folder.
+(define (walk options)
+  (let ((target (get-target options)))
+    (ftw target
+         (lambda (filename statinfo flag)
+           (let ((filename-wo-target (remove-target filename options)))
+             (if (not (ignore? filename-wo-target options))
+                 (create filename (homey filename-wo-target)))
+             #t)))))
+
 ;; ACTIONS
 
-(define (create options)
-  (ftw (get-target options)
-       (lambda (filename statinfo flag)
-         (let ((filename-wo-target (remove-target filename options)))
-           (if (not (member #t (map (lambda (v) (string-prefix? filename-wo-target v))
-                                    (ignored-files-found (get-target options)))))
-               (begin (display filename-wo-target)
-                      (newline)))
-           #t))))
 (define (create target link)
   (newline)
   (display (format #f "~a -> ~a" target link)))
@@ -144,11 +146,11 @@
 (define (option-run options)
   (let ((option-wanted (lambda (option) (option-ref options option #f))))
     (cond ((option-wanted 'version)   (version))
-          ((option-wanted 'create)    (create options))
-          ((option-wanted 'remove)    (remove options))
-          ((option-wanted 'pretend)   (pretend options))
-          ((option-wanted 'overwrite) (overwrite options))
-          ((option-wanted 'info)      (info options))
+          ((option-wanted 'create)    (walk options))
+          ((option-wanted 'remove)    (walk options))
+          ((option-wanted 'pretend)   (walk options))
+          ((option-wanted 'overwrite) (walk options))
+          ((option-wanted 'info)      (walk options))
           ((option-wanted 'help)      (usage-banner))
           (else                       (usage-banner)))))
 
