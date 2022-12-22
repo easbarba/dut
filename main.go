@@ -56,7 +56,7 @@ func homey(file string) string {
 	return strings.Replace(file, root, homeDir(), 1)
 }
 
-func mkdir(file, newfile string) {
+func mkdirp(file, newfile string) {
 	rootfile, err := os.Open(file)
 	if err != nil {
 		println(err)
@@ -92,8 +92,8 @@ func info(ignored []string, root string) {
 }
 
 func create(file string) {
+	// mkdirp(file, homey(file))
 	fmt.Println(file, "-->", homey(file))
-	mkdir(file, homey(file))
 }
 
 func overwrite(file string) {
