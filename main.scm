@@ -28,8 +28,9 @@
 
 (define home (getenv "HOME"))
 (define (version) (display "0.0.1"))
-
 (define dutignore-filename ".dutignore")
+
+;; HELPERS
 
 (define (dutignore-exist? file)
   (file-exists? file))
@@ -72,7 +73,7 @@
                             (+ 1 (string-length target)))))
     (string-replace filename "" 0 target-length)))
 
-;; returns TARGET/.config/meh/filename to $HOME/.config/meh/filename
+;; returns TARGET/.config/meh/FILENAME to $HOME/.config/meh/FILENAME
 (define (homey filename)
   (string-append home "/" filename))
 
@@ -150,6 +151,8 @@
           ((option-wanted 'info)      (info options))
           ((option-wanted 'help)      (usage-banner))
           (else                       (usage-banner)))))
+
+;; MAIN
 
 (define (main args)
   (let ((target (if (null? args)
