@@ -53,20 +53,26 @@
       (canonicalize-path (cdr (assv 'to options)))
       home))
 
-;; remove target string from current filename "/target/filename" -> "filename"
+;; return: string
+;; remove target from current filename "/target/filename" -> "filename"
 (define (remove-target filename options)
-  (string-replace filename "" 0 (string-length (get-target options))))
+  (let* ((target (get-target options))
+         (target-length (if (string-ci= target filename)
+                            (string-length target) ;; if filename is target return without heading /
+                            (+ 1 (string-length target)))))
+    (string-replace filename "" 0 target-length)))
 
 ;; ACTIONS
 
 (define (create options)
-
-  (ftw (get-target options) (lambda (filename statinfo flag)
-                              (let ((filename-path (string-append (get-target options) filename)))
-                                (if (not (member (string- filename) '(".git" ".svn" "CVS")))
-                                  (begin (display (string-append (get-target options) filename))
-                                         (newline))))
-                              #t)))
+  (ftw (get-target options)
+       (lambda (filename statinfo flag)
+         (let ((filename-wo-target (remove-target filename options)))
+           (if (not (member #t (map (lambda (v) (string-prefix? filename-wo-target (string-append "/" v)))
+                         (ignored-files (get-target options)))))
+               (begin (display (string-trim filename-wo-target))
+                      (newline)))
+         #t))))
 
 (define (remove options) (display 'remove))
 
