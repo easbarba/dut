@@ -1,4 +1,6 @@
 .git
 .gitignore
-README
+README.md
 LICENSE
+Makefile
+.envrc
