@@ -30,7 +30,7 @@
 ;; -----------------------------------------------------------------------
 
 (define home (getenv "HOME"))
-(define (version) (display "0.0.1"))
+(define version "0.0.1")
 
 ;; IGNORED FILE
 ;; -----------------------------------------------------------------------
@@ -53,11 +53,10 @@
 ;; default files to be ignored
 (define ignored-files-default '(".git" ".dutignore"))
 
-(define (ignored-files-final options)
-  (let ((files (ignored-files-found (target-get options))))
-    (map (lambda (i)
-           (if (not (member i files))
-               (cons i files)))
+(define (ignored-files-final target)
+  (let ((files (ignored-files-found target)))
+    (map (lambda (i) (if (not (member i files))
+                    (cons i files)))
          files)
     files))
 
@@ -76,9 +75,8 @@
 
 ;; return: string
 ;; remove target from current filename "/target/filename" -> "filename"
-(define (target-remove filename options)
-  (let* ((target (target-get options))
-         (target-length (if (string-ci= target filename)
+(define (target-remove filename target)
+  (let* ((target-length (if (string-ci= target filename)
                             (string-length target) ;; if filename is target return without heading /
                             (+ 1 (string-length target)))))
     (string-replace filename "" 0 target-length)))
@@ -88,30 +86,30 @@
   (string-append home "/" filename))
 
 ;; is FILENAME listed in .dutignore?
-(define (target-ignore? filename options) ;; FIX: not ignore .git folder
+(define (target-ignore? filename target) ;; FIX: not ignore .git folder
   (member #t (map (lambda (v) (string-prefix? filename v))
-                  (ignored-files-final options))))
+                  (ignored-files-final target))))
 
 ;; Walk recursively through the TARGET folder.
-(define (walk options action)
-  (let ((target (target-get options)))
-    (ftw target
+(define (walk target action)
+  (ftw target
          (lambda (current-filename statinfo flag)
-           (let* ((target-wo-prefix (target-remove current-filename options))
+           (let* ((target-wo-prefix (target-remove current-filename target))
                  (target-homeyd (target-to-home target-wo-prefix)))
-             (if (not (target-ignore? target-wo-prefix options))
+             (if (not (target-ignore? target-wo-prefix target))
                  (action current-filename target-homeyd))
-             #t)))))
+             #t)))
+)
 
 ;; ACTIONS
 ;; -----------------------------------------------------------------------
 
 (define (create options)
-
-  (walk options
-        (lambda (target link)
-          (newline)
-          (display (format #f "~a -> ~a" target link)))))
+  (let ((target (target-get options)))
+    (walk target
+          (lambda (source link)
+            (newline)
+            (display (format #f "~a -> ~a" source link))))))
 
 (define (remove options)
   (display 'remove))
@@ -123,11 +121,12 @@
   (display 'overwriting))
 
 (define (info options)
-  (display (format #f "target: ~a" (target-get options)))
-  (newline)
-  (display (format #f "destination: ~a" (destination-get options)))
-  (newline)
-  (display (format #f "dutignore: ~a" (string-join (ignored-files-found (target-get options)) " "))))
+  (let ((target (target-get options)))
+    (display (format #f "target: ~a" target))
+    (newline)
+    (display (format #f "destination: ~a" (destination-get options)))
+    (newline)
+    (display (format #f "dutignore: ~a" (string-join (ignored-files-found target) " ")))))
 
 ;; CLI PARSING
 ;; -----------------------------------------------------------------------
@@ -162,7 +161,7 @@
 
 (define (cli-option-run options)
   (let ((option-wanted (lambda (option) (option-ref options option #f))))
-    (cond ((option-wanted 'version)   (version))
+    (cond ((option-wanted 'version)   (display version))
           ((option-wanted 'create)    (create options))
           ((option-wanted 'remove)    (remove options))
           ((option-wanted 'pretend)   (pretend options))
