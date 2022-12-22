@@ -5,9 +5,9 @@ Yet another simple and opinionated dot files manager.
 |--------|--------------|
 | ruby   | fully        |
 | golang | almost there |
-| java   | initial      |
+| java   | half way     |
+| guile  | one-third    |
 | perl   | initial      |
-| guile  | initial      |
 | bash   | initial      |
 
 # Specification:
