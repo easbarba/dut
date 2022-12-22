@@ -69,9 +69,15 @@
 
 ;; Destination folder, defaults to $HOME.
 (define (destination-get options)
-  (if (assq 'to options)
-      (canonicalize-path (cdr (assv 'to options)))
-      home))
+  (let ((dest (if (assq 'to options)
+                  (cdr (assv 'to options))
+                  home)))
+
+    ;; create DEST if it does not exist yet.
+    (unless (file-exists? dest)
+      (mkdir dest))
+
+    (canonicalize-path dest)))
 
 ;; return: string
 ;; remove target from current filename "/target/filename" -> "filename"
