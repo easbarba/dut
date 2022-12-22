@@ -44,6 +44,14 @@
 ;; default files to be ignored
 (define ignored-files-default '(".git" ".dutignore"))
 
+(define (ignored-files-final options)
+  (let ((files (ignored-files-found (get-target options))))
+    (map (lambda (i)
+           (if (not (member i files))
+               (cons i files)))
+         files)
+    files))
+
 ;; Folder residing all dotfiles to link.
 (define (get-target options)
   (canonicalize-path (cdr (assv 'from options))))
