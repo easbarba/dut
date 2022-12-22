@@ -1,5 +1,5 @@
 #!/usr/bin/guile \
--e main -s 
+--no-auto-compile -e main -s
 !#
 
 ;; Licensed to the Apache Software Foundation (ASF) under one
@@ -53,7 +53,7 @@
 ;; default files to be ignored
 (define ignored-files-default '(".git" ".dutignore"))
 
-(define (ignored-files-final target)
+(define (ignored-files target)
   (let ((files (ignored-files-found target)))
     (map (lambda (i) (if (not (member i files))
                     (cons i files)))
@@ -86,29 +86,30 @@
   (string-append home "/" filename))
 
 ;; is FILENAME listed in .dutignore?
-(define (target-ignore? filename target) ;; FIX: not ignore .git folder
-  (member #t (map (lambda (v) (string-prefix? filename v))
-                  (ignored-files-final target))))
+(define (target-ignore? file target) ;; FIX: not ignore .git folder
+  (member #t (map (lambda (ignore-file)
+                    (unless (string-null? ignore-file)
+                      ;; (newline) (display (format #f "i: ~a -> f: ~a ? ~a n: ~a" ignore-file file (string-prefix? ignore-file file) (string-null? ignore-file)))
+                      (string-prefix? ignore-file file)))
+                  (ignored-files target))))
 
-;; Walk recursively through the TARGET folder.
+;; walk recursively through the TARGET folder and run ACTION.
 (define (walk target action)
   (ftw target
-         (lambda (current-filename statinfo flag)
-           (let* ((target-wo-prefix (target-remove current-filename target))
-                 (target-homeyd (target-to-home target-wo-prefix)))
-             (if (not (target-ignore? target-wo-prefix target))
-                 (action current-filename target-homeyd))
-             #t))))
+       (lambda (current-filename statinfo flag)
+         (let* ((file (target-remove current-filename target))
+                (file-homeyd (target-to-home file)))
+           (unless (target-ignore? file target)
+             (action current-filename file-homeyd))
+           #t))))
 
 ;; ACTIONS
 ;; -----------------------------------------------------------------------
 
 (define (create options)
   (let ((target (target-get options)))
-    (walk target
-          (lambda (source link)
-            (newline)
-            (display (format #f "~a -> ~a" source link))))))
+    (walk target (lambda (source link)
+                   (display (format #f "\n ~a -> ~a" source link))))))
 
 (define (remove options)
   (display 'remove))
@@ -125,7 +126,7 @@
     (newline)
     (display (format #f "destination: ~a" (destination-get options)))
     (newline)
-    (display (format #f "dutignore: ~a" (string-join (ignored-files-found target) " ")))))
+    (display (format #f "ignore: ~a" (string-join (ignored-files target) " ")))))
 
 ;; CLI PARSING
 ;; -----------------------------------------------------------------------
@@ -153,7 +154,7 @@
                       (from      (single-char #\f) (value #t))
                       (help      (single-char #\h) (value #f))))
 
-(define (cli-parser args target)
+(define (cli-parser args)
   (let* ((option-spec cli-option-list)
          (options (getopt-long args option-spec)))
     (cli-option-run options)))
@@ -173,7 +174,4 @@
 ;; -----------------------------------------------------------------------
 
 (define (main args)
-  (let ((target (if (null? args)
-                    (canonicalize-path (cadr args))
-                    "")))
-    (cli-parser args target)))
+  (cli-parser args))
