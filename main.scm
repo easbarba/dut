@@ -53,6 +53,10 @@
       (canonicalize-path (cdr (assv 'to options)))
       home))
 
+;; remove target string from current filename "/target/filename" -> "filename"
+(define (remove-target filename options)
+  (string-replace filename "" 0 (string-length (get-target options))))
+
 ;; ACTIONS
 
 (define (create options)
