@@ -76,6 +76,10 @@
 (define (homey filename)
   (string-append home "/" filename))
 
+;; is FILENAME listed in .dutignore?
+(define (ignore? filename options)
+  (member #t (map (lambda (v) (string-prefix? filename v))
+                  (ignored-files-final options))))
 ;; ACTIONS
 
 (define (create options)
