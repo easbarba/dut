@@ -91,18 +91,21 @@
   (newline)
   (display (format #f "~a -> ~a" target link)))
 
-(define (remove options) (display 'remove))
+(define (remove options)
+  (display 'remove))
 
-(define (pretend options) (display 'dryrunning))
+(define (pretend options)
+  (display 'dryrunning))
 
-(define (overwrite options) (display 'overwriting))
+(define (overwrite options)
+  (display 'overwriting))
 
 (define (info options)
-  (display (string-append "target: " (get-target options)))
+  (display (format #f "target: ~a" (get-target options)))
   (newline)
-  (display (string-append "destination: " (get-destination options)))
+  (display (format #f "destination: ~a" (get-destination options)))
   (newline)
-  (display (string-append "dutignore: " (string-join (ignored-files-found (get-target options)) " "))))
+  (display (format #f "dutignore: ~a" (string-join (ignored-files-found (get-target options)) " "))))
 
 ;; CLI PARSING
 
