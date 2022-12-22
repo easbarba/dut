@@ -23,7 +23,8 @@
         (rnrs io ports)
         (rnrs io simple)
         (ice-9 getopt-long)
-        (ice-9 ftw))
+        (ice-9 ftw)
+        (ice-9 format))
 
 (define home (getenv "HOME"))
 (define (version) (display "0.0.1"))
@@ -86,6 +87,9 @@
                (begin (display filename-wo-target)
                       (newline)))
            #t))))
+(define (create target link)
+  (newline)
+  (display (format #f "~a -> ~a" target link)))
 
 (define (remove options) (display 'remove))
 
