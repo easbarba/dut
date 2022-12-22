@@ -1,5 +1,5 @@
 #!/usr/bin/guile \
--e main -s
+-e main -s 
 !#
 
 ;; Licensed to the Apache Software Foundation (ASF) under one
@@ -36,12 +36,13 @@
 (define (dutignore target)
   (string-append target "/" dutignore-filename))
 
-(define (ignored-files target)
-  (let* ((listed (string-split
-                  (call-with-input-file (dutignore target) get-string-all)
-                  #\newline))
-         (all (cons ".git" (cons ".dutignore" listed))))
-    all)) ;; (map (lambda (file)(string-append target "/" file)) all)
+;; return all listed files to be ignored in .dutignore
+(define (ignored-files-found target)
+  (string-split (call-with-input-file (dutignore target) get-string-all)
+                #\newline))
+
+;; default files to be ignored
+(define ignored-files-default '(".git" ".dutignore"))
 
 ;; Folder residing all dotfiles to link.
 (define (get-target options)
@@ -68,11 +69,11 @@
   (ftw (get-target options)
        (lambda (filename statinfo flag)
          (let ((filename-wo-target (remove-target filename options)))
-           (if (not (member #t (map (lambda (v) (string-prefix? filename-wo-target (string-append "/" v)))
-                         (ignored-files (get-target options)))))
-               (begin (display (string-trim filename-wo-target))
+           (if (not (member #t (map (lambda (v) (string-prefix? filename-wo-target v))
+                                    (ignored-files-found (get-target options)))))
+               (begin (display filename-wo-target)
                       (newline)))
-         #t))))
+           #t))))
 
 (define (remove options) (display 'remove))
 
@@ -85,7 +86,7 @@
   (newline)
   (display (string-append "destination: " (get-destination options)))
   (newline)
-  (display (string-append "dutignore: " (string-join (ignored-files (get-target options)) " "))))
+  (display (string-append "dutignore: " (string-join (ignored-files-found (get-target options)) " "))))
 
 ;; CLI PARSING
 
@@ -102,14 +103,14 @@
   -h, --help            display this help"))
 
 (define option-list '((version     (single-char #\v) (value #f))
-                        (create    (single-char #\c) (value #f))
-                        (remove    (single-char #\r) (value #f))
-                        (pretend   (single-char #\p) (value #f))
-                        (overwrite (single-char #\o) (value #f))
-                        (info      (single-char #\i) (value #f))
-                        (to        (single-char #\t) (value optional))
-                        (from      (single-char #\f) (value #t))
-                        (help      (single-char #\h) (value #f))))
+                      (create    (single-char #\c) (value #f))
+                      (remove    (single-char #\r) (value #f))
+                      (pretend   (single-char #\p) (value #f))
+                      (overwrite (single-char #\o) (value #f))
+                      (info      (single-char #\i) (value #f))
+                      (to        (single-char #\t) (value optional))
+                      (from      (single-char #\f) (value #t))
+                      (help      (single-char #\h) (value #f))))
 
 (define (cli-parser args target)
   (let* ((option-spec option-list)
@@ -129,6 +130,6 @@
 
 (define (main args)
   (let ((target (if (null? args)
-                  (canonicalize-path (cadr args))
-                  "")))
+                    (canonicalize-path (cadr args))
+                    "")))
     (cli-parser args target)))
