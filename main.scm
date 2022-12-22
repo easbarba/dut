@@ -63,6 +63,10 @@
                             (+ 1 (string-length target)))))
     (string-replace filename "" 0 target-length)))
 
+;; returns TARGET/.config/meh/filename to $HOME/.config/meh/filename
+(define (homey filename)
+  (string-append home "/" filename))
+
 ;; ACTIONS
 
 (define (create options)
