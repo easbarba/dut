@@ -98,8 +98,7 @@
                  (target-homeyd (target-to-home target-wo-prefix)))
              (if (not (target-ignore? target-wo-prefix target))
                  (action current-filename target-homeyd))
-             #t)))
-)
+             #t))))
 
 ;; ACTIONS
 ;; -----------------------------------------------------------------------
