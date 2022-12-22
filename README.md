@@ -4,9 +4,9 @@ Yet another simple and opinionated dot files manager.
 | lang   | completion   |
 |--------|--------------|
 | ruby   | fully        |
+| guile  | almost there |
 | golang | almost there |
 | java   | half way     |
-| guile  | one-third    |
 | perl   | initial      |
 | bash   | initial      |
 
