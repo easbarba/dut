@@ -103,19 +103,19 @@
 (define (walk target action)
   (ftw target
        (lambda (current-filename statinfo flag)
-         (let* ((file (target-remove current-filename target))
-                (file-homeyd (target-to-home file)))
+         (let* ((file (target-remove current-filename target)))
            (unless (target-ignore? file target)
-             (action current-filename file-homeyd))
+             (action current-filename file))
            #t))))
 
 ;; ACTIONS
 ;; -----------------------------------------------------------------------
 
 (define (create options)
-  (let ((target (target-get options)))
-    (walk target (lambda (source link)
-                   (display (format #f "\n ~a -> ~a" source link))))))
+  (walk (target-get options)
+        (lambda (source link) (link-process
+                          source
+                          (link-destined (destination-get options) link)))))
 
 (define (remove options)
   (display 'remove))
