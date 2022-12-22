@@ -128,6 +128,26 @@
     (newline)
     (display (format #f "ignore: ~a" (string-join (ignored-files target) " ")))))
 
+;; HELPERS
+;; -----------------------------------------------------------------------
+
+;; link file or create directory.
+(define (link-process source link)
+  (if (file-is-directory? source)
+      (unless (file-exists? link)
+        (begin (display (format #f "\nCreating directory: ~a" link))
+               (mkdir link)))
+      (unless (file-exists? link)
+        (begin
+          (display (format #f "\nCreating link: ~a" link))
+          (symlink source link)))))
+
+;; if -to flag is provided, append DESTINE to LINK.
+(define (link-destined destine link)
+  (if (string-null? destine)
+        link
+        (string-append destine "/" link)))
+
 ;; CLI PARSING
 ;; -----------------------------------------------------------------------
 
