@@ -152,6 +152,17 @@
 ;; HELPERS
 ;; -----------------------------------------------------------------------
 
+;; link file or create directory.
+(define* (link-process source link #:optional pretend)
+  (if (file-is-directory? source)
+      (unless (file-exists? link)
+        (begin (display (format #f "\nCreating directory: ~a" link))
+               (unless pretend (mkdir link))))
+      (unless (file-exists? link)
+        (begin
+          (display (format #f "\nCreating link: ~a" link))
+          (unless pretend (symlink source link))))))
+
 ;; if -to flag is provided, append DESTINE to LINK.
 (define (link-destined destine link)
   (if (string-null? destine)
