@@ -125,11 +125,13 @@
               (delete-file linked))))))
 
 (define (pretend options)
+  (display "-> Initiate dry-run mode\n")
   (walk (target-get options)
         (lambda (source link)
           (link-process source
                         (link-destined (destination-get options) link)
-                        #t))))
+                        #t)))
+  (display "\n-> End dry-run mode"))
 
 (define (overwrite options)
   (display 'overwriting))
