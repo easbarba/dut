@@ -112,18 +112,7 @@
 ;; -----------------------------------------------------------------------
 
 (define (create options)
-  ;; link file or create directory.
-  (define (link-process source link)
-    (if (file-is-directory? source)
-        (unless (file-exists? link)
-          (begin (display (format #f "\nCreating directory: ~a" link))
-                 (mkdir link)))
-        (unless (file-exists? link)
-          (begin
-            (display (format #f "\nCreating link: ~a" link))
-            (symlink source link)))))
-
-  (walk (target-get options)
+    (walk (target-get options)
         (lambda (source link)
           (link-process source
                         (link-destined (destination-get options) link)))))
@@ -136,7 +125,11 @@
               (delete-file linked))))))
 
 (define (pretend options)
-  (display 'dryrunning))
+  (walk (target-get options)
+        (lambda (source link)
+          (link-process source
+                        (link-destined (destination-get options) link)
+                        #t))))
 
 (define (overwrite options)
   (display 'overwriting))
