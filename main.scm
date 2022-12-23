@@ -129,7 +129,11 @@
                         (link-destined (destination-get options) link)))))
 
 (define (remove options)
-  (display 'remove))
+  (walk (target-get options)
+        (lambda (source link)
+          (let ((linked (link-destined (destination-get options) link)))
+            (unless (file-is-directory? linked)
+              (delete-file linked))))))
 
 (define (pretend options)
   (display 'dryrunning))
